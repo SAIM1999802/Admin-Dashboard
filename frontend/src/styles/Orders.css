@@ -1,0 +1,233 @@
+.admin-page {
+  padding: 2rem;
+  background-color: #f4f7fb;
+  min-height: calc(100vh - 70px);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0c1e3c;
+  margin: 0;
+}
+
+.primary-btn {
+  background-color: #1a73e8;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.orders-filter-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid #d9dee7;
+  border-radius: 10px;
+  padding: 0 1rem;
+  height: 68px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1rem;
+}
+
+.status-filter-select {
+  width: 460px;
+  height: 68px;
+  border: 1px solid #d9dee7;
+  border-radius: 10px;
+  padding: 0 20px;
+  font-size: 18px;
+  background-color: #ffffff;
+  outline: none;
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 1rem;
+  color: #1a73e8;
+  border-bottom: 2px solid #eaf0f7;
+  font-weight: 600;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f4f8;
+  color: #0c1e3c;
+}
+
+.status {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status.completed {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.status.pending {
+  background-color: #fef7e0;
+  color: #b06000;
+}
+
+.status.shipped {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+}
+
+.status.cancelled,
+.status.deleted {
+  background-color: #fce8e6;
+  color: #c5221f;
+}
+
+.btn-action-edit {
+  padding: 8px 12px;
+  border: none;
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-action-edit:hover {
+  background-color: #e0e7ff;
+}
+
+.btn-action-delete {
+  padding: 8px 12px;
+  border: none;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-action-delete:hover {
+  background-color: #fee2e2;
+}
+
+.tab-scroll {
+  position: sticky;
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+  top: 0;
+  background: #ffffff;
+  color: #123f83 !important;
+  z-index: 2;
+}
+
+.custom-tooltip {
+  position: relative;
+}
+
+.custom-tooltip::after {
+  content: attr(data-title);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.custom-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.custom-tooltip:hover::after,
+.custom-tooltip:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.qty-counter-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.qty-counter-group button {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.qty-counter-group button:hover {
+  background-color: #f8f9fa;
+}

@@ -1,0 +1,82 @@
+.btn-action-edit {
+    padding: 8px 12px;
+    border: none;
+    background-color: #eef2ff;
+    color: #4f46e5;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .btn-action-edit:hover {
+    background-color: #e0e7ff;
+  }
+  
+  .btn-action-delete {
+    padding: 8px 12px;
+    border: none;
+    background-color: #fef2f2;
+    color: #dc2626;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .btn-action-delete:hover {
+    background-color: #fee2e2;
+  }
+
+  .tab-scroll{
+    position: sticky;
+    max-height: 100px;
+    overflow-y: auto;
+    overflow-x: auto;
+    top: 0;
+    background: #ffffff;
+    color: #123f83 !important; 
+    z-index: 2;
+  }
+
+  .custom-tooltip {
+    position: relative;
+  }
+  
+  .custom-tooltip::after {
+    content: attr(data-title);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 5px 9px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    pointer-events: none;
+    z-index: 10;
+  }
+  
+  .custom-tooltip::before {
+    content: "";
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .custom-tooltip:hover::after,
+  .custom-tooltip:hover::before {
+    opacity: 1;
+    visibility: visible;
+  }

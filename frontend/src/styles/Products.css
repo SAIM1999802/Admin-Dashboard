@@ -1,0 +1,184 @@
+/* src/styles/Products.css */
+.admin-page {
+  padding: 30px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 60px);
+}
+
+.page-header-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background-color: #0874e8;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.btn-add-product {
+  padding: 12px 24px;
+  background-color: #0874e8;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-add-product:hover {
+  background-color: #0662c7;
+}
+
+.inventory-card {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #e2e6ec;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.search-input-custom {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d9dee7;
+  outline: none;
+}
+
+.category-select-custom {
+  width: 250px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #d9dee7;
+  outline: none;
+}
+
+.table-row-border {
+  border-bottom: 1px solid #edf2f7;
+}
+
+.product-img-thumb {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-img-placeholder {
+  width: 45px;
+  height: 45px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+}
+
+.btn-action-edit {
+  padding: 8px 12px;
+  border: none;
+  background-color: #eef2ff;
+  color: #4f46e5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-action-edit:hover {
+  background-color: #e0e7ff;
+}
+
+.btn-action-delete {
+  padding: 8px 12px;
+  border: none;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-action-delete:hover {
+  background-color: #fee2e2;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status.in-stock {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status.low-stock {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+
+.status.out-stock {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.tab-scroll {
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.tab-scroll table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  color: #123f83 !important;
+  z-index: 2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.custom-tooltip {
+  position: relative;
+}
+
+.custom-tooltip::after {
+  content: attr(data-title);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.custom-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+}
+.custom-tooltip:hover::after,
+.custom-tooltip:hover::before {
+  opacity: 1;
+  visibility: visible;
+}

@@ -1,0 +1,157 @@
+.dashboard-wrapper {
+  background-color: #f4f7fe;
+  min-height: calc(100vh - 70px);
+}
+
+.dashboard-title {
+  color: #0c1e3c;
+  font-size: 1.5rem;
+}
+
+/* ==========================================
+   METRIC CARDS BASE STYLING (Extra Light Borders & Icons)
+   ========================================== */
+.metric-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border: 1px solid #e2e8f0;       /* Very Light Gray Border */
+  border-left: 5px solid #94a3b8;  /* Soft Light Slate Side Accent */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.clickable-card {
+  cursor: pointer;
+}
+
+/* Light Grey / Muted Icon Box */
+.metric-icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  background-color: #f1f5f9;       /* Light Muted Gray Background */
+  color: #64748b;                  /* Soft Gray Icon Color */
+  transition: all 0.3s ease-in-out;
+}
+
+/* Details Typography */
+.metric-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* ==========================================
+   HOVER STATES (Colorful Highlights on Hover)
+   ========================================== */
+
+/* 1. Sales Card Hover */
+.card-sales:hover {
+  border-color: #e2e8f0;
+  border-left-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px #10b98183;
+}
+.card-sales:hover .metric-icon-wrapper {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.card-orders:hover {
+  border-color: #e2e8f0;
+  border-left-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px #3b83f690;
+}
+.card-orders:hover .metric-icon-wrapper {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.card-customers:hover {
+  border-color: #e2e8f0;
+  border-left-color: #8b5cf6;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px #8a5cf696;
+}
+.card-customers:hover .metric-icon-wrapper {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+.card-products:hover {
+  border-color: #e2e8f0;
+  border-left-color: #f59e0b;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(245, 159, 11, 0.484)
+}
+.card-products:hover .metric-icon-wrapper {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.orders-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.orders-heading {
+  font-weight: 700;
+  color: #0c1e3c;
+}
+
+.orders-table th {
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.orders-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-badge.completed { background-color: #d1fae5; color: #047857; }
+.status-badge.pending { background-color: #fef3c7; color: #b45309; }
+.status-badge.shipped { background-color: #dbeafe; color: #1d4ed8; }
+.status-badge.cancelled { background-color: #fee2e2; color: #b91c1c; }
