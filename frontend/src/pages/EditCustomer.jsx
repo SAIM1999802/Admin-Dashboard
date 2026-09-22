@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../components/Navbar";
+
 import { getCustomerById, updateCustomer } from "../services/api";
-import "../styles/EditCustomer.css"; // Separate CSS Import
+import "../styles/Customers.css";
 
 const EditCustomer = () => {
   const { id } = useParams();
@@ -56,9 +56,7 @@ const EditCustomer = () => {
       navigate("/customers");
     } catch (error) {
       console.error("Error updating customer:", error);
-      alert(
-        error.response?.data?.message || "Failed to update customer"
-      );
+      alert(error.response?.data?.message || "Failed to update customer");
     } finally {
       setSaving(false);
     }
@@ -67,10 +65,12 @@ const EditCustomer = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
-        <div className="d-flex justify-content-center align-items-center vh-100">
-          <div className="spinner-border text-primary" role="status"></div>
-          <span className="ms-3 fw-semibold">Loading customer details...</span>
+
+        <div className="d-flex justify-content-center align-items-center vh-100 flex-column gap-3">
+          <div className="custom-spinner"></div>
+          <span style={{ fontWeight: 600, color: "#073b34" }}>
+            Loading customer details...
+          </span>
         </div>
       </>
     );
@@ -78,82 +78,83 @@ const EditCustomer = () => {
 
   return (
     <>
-      <Navbar />
 
-      <main className="edit-customer-container">
-        <div className="edit-customer-wrapper">
 
-          <div className="edit-customer-header">
-            <h1 className="edit-customer-title">Edit Customer #{id}</h1>
-          </div>
+      <main className="edit-customer-container container">
+        <div className="row">
+          <div className="col-12">
+            <div className="edit-customer-header">
+              <h1 className="edit-customer-title">Edit Customer #{id}</h1>
+            </div>
 
-          <div className="edit-customer-card">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-3">
-                <label className="form-label">Customer Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  className="form-control"
-                  value={formData.name}
-                  onChange={handleChange}
-         
-                />
-              </div>
+            <div className="edit-customer-card mx-auto" style={{ maxWidth: "650px" }}>
+              <form onSubmit={handleSubmit}>
+                <div className="custom-form-group">
+                  <label className="custom-form-label">Customer Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    className="custom-form-input"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-              <div className="mb-3">
-                <label className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  className="form-control"
-                  value={formData.email}
-                  onChange={handleChange}
+                <div className="custom-form-group">
+                  <label className="custom-form-label">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    className="custom-form-input"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-                />
-              </div>
+                <div className="custom-form-group">
+                  <label className="custom-form-label">Phone Number</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    className="custom-form-input"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              <div className="mb-3">
-                <label className="form-label">Phone Number</label>
-                <input
-                  type="text"
-                  name="phone"
-                  className="form-control"
-                  value={formData.phone}
-                  onChange={handleChange}
-                />
-              </div>
+                <div className="custom-form-group">
+                  <label className="custom-form-label">Delivery Address</label>
+                  <textarea
+                    name="address"
+                    className="custom-form-textarea"
+                    rows="3"
+                    value={formData.address}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              <div className="mb-4">
-                <label className="form-label">Delivery Address</label>
-                <textarea
-                  name="address"
-                  className="form-control"
-                  rows="3"
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              </div>
+                <div className="d-flex justify-content-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    className="btn-secondary"
+                    onClick={() => navigate("/customers")}
+                    disabled={saving}
+                  >
+                    Cancel
+                  </button>
 
-              <div className="edit-customer-actions">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => navigate("/customers")}
-                  disabled={saving}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={saving}
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
+                  <button
+                    type="submit"
+                    className="primary-btn"
+                    disabled={saving}
+                  >
+                    {saving ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </main>

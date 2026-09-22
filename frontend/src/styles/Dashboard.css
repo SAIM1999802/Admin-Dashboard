@@ -1,157 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 .dashboard-wrapper {
-  background-color: #f4f7fe;
+  background: linear-gradient(180deg, #FBF8F2 0%, #F5F0E6 100%);
   min-height: calc(100vh - 70px);
+  padding: 2.5rem 3rem;
+  color: #0B3D2E;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
 }
 
 .dashboard-title {
-  color: #0c1e3c;
-  font-size: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.3rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #0B3D2E 0%, #14503E 60%, #4A7C6F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-/* ==========================================
-   METRIC CARDS BASE STYLING (Extra Light Borders & Icons)
-   ========================================== */
+.live-badge {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.12), rgba(232, 90, 42, 0.16));
+  color: #FF6B35;
+  border: 1px solid rgba(255, 107, 53, 0.25);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.12);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
 .metric-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.25rem 1.5rem;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 1.6rem;
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  border: 1px solid #e2e8f0;       /* Very Light Gray Border */
-  border-left: 5px solid #94a3b8;  /* Soft Light Slate Side Accent */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s ease-in-out;
+  gap: 1.3rem;
+  border: 1px solid #E0D9CC;
+  box-shadow: 0 2px 8px rgba(11, 61, 46, 0.06);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
 }
 
-.clickable-card {
-  cursor: pointer;
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: -50px; right: -50px;
+  width: 140px; height: 140px;
+  background: radial-gradient(circle, rgba(74, 124, 111, 0.08), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
-/* Light Grey / Muted Icon Box */
+.clickable-card { cursor: pointer; }
+
+.clickable-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 45px rgba(11, 61, 46, 0.14);
+  border-color: transparent;
+}
+
 .metric-icon-wrapper {
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
   flex-shrink: 0;
-  background-color: #f1f5f9;       /* Light Muted Gray Background */
-  color: #64748b;                  /* Soft Gray Icon Color */
-  transition: all 0.3s ease-in-out;
+  background: linear-gradient(135deg, #FFE8D6, #FFD4B8);
+  color: #0B3D2E;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
 }
 
-/* Details Typography */
+.clickable-card:hover .metric-icon-wrapper {
+  background: linear-gradient(135deg, #0B3D2E, #062018);
+  color: #FFE8D6;
+  transform: scale(1.05) rotate(-5deg);
+  box-shadow: 0 8px 20px rgba(11, 61, 46, 0.3);
+}
+
 .metric-details {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
 }
 
 .metric-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 2px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #7A8B85;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .metric-value {
-  font-size: 1.5rem;
+  font-size: 1.85rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #0B3D2E;
+  font-family: 'Playfair Display', serif;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
-/* ==========================================
-   HOVER STATES (Colorful Highlights on Hover)
-   ========================================== */
-
-/* 1. Sales Card Hover */
-.card-sales:hover {
-  border-color: #e2e8f0;
-  border-left-color: #10b981;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px #10b98183;
-}
-.card-sales:hover .metric-icon-wrapper {
-  background-color: #d1fae5;
-  color: #059669;
+.card-sales .metric-value {
+  background: linear-gradient(135deg, #FF6B35, #E85A2A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.card-orders:hover {
-  border-color: #e2e8f0;
-  border-left-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px #3b83f690;
-}
-.card-orders:hover .metric-icon-wrapper {
-  background-color: #dbeafe;
-  color: #2563eb;
-}
-
-.card-customers:hover {
-  border-color: #e2e8f0;
-  border-left-color: #8b5cf6;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px #8a5cf696;
-}
-.card-customers:hover .metric-icon-wrapper {
-  background-color: #ede9fe;
-  color: #7c3aed;
-}
-
-.card-products:hover {
-  border-color: #e2e8f0;
-  border-left-color: #f59e0b;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(245, 159, 11, 0.484)
-}
-.card-products:hover .metric-icon-wrapper {
-  background-color: #fef3c7;
-  color: #d97706;
+.orders-section-heading {
+  font-size: 1.6rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  color: #0B3D2E;
+  margin-bottom: 1.3rem;
+  letter-spacing: -0.01em;
 }
 
 .orders-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.25rem;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 1.85rem;
+  border: 1px solid #E0D9CC;
+  box-shadow: 0 8px 24px rgba(11, 61, 46, 0.06);
 }
 
-.orders-heading {
-  font-weight: 700;
-  color: #0c1e3c;
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
 }
 
 .orders-table th {
-  color: #64748b;
-  font-size: 0.85rem;
+  color: #7A8B85;
+  font-size: 0.76rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 1rem;
-  border-bottom: 2px solid #f1f5f9;
+  letter-spacing: 0.08em;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #E0D9CC;
 }
 
 .orders-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 1.25rem;
+  border-bottom: 1px solid #F0EDE6;
+  font-size: 0.95rem;
+  color: #2C3E3A;
 }
 
-/* Status Badges */
-.status-badge {
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.825rem;
+.orders-table tr:last-child td { border-bottom: none; }
+
+.orders-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.orders-table tbody tr:hover {
+  background-color: #FBF8F2;
+}
+
+.cell-order-id {
+  color: #FF6B35;
+  font-weight: 700;
+}
+
+.cell-customer {
   font-weight: 600;
+  color: #0B3D2E;
+}
+
+.cell-date { color: #7A8B85; }
+.cell-amount { font-weight: 700; color: #0B3D2E; }
+
+.no-orders-cell {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #7A8B85;
+}
+
+.status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
+  gap: 0.4rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
-.status-badge.completed { background-color: #d1fae5; color: #047857; }
-.status-badge.pending { background-color: #fef3c7; color: #b45309; }
-.status-badge.shipped { background-color: #dbeafe; color: #1d4ed8; }
-.status-badge.cancelled { background-color: #fee2e2; color: #b91c1c; }
+.status-badge.completed {
+  background: linear-gradient(135deg, #0B3D2E, #14503E);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(11, 61, 46, 0.25);
+}
+
+.status-badge.pending {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(232, 90, 42, 0.2));
+  color: #FF6B35;
+  border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.status-badge.shipped {
+  background: linear-gradient(135deg, #DCEAE4, #C8DDD3);
+  color: #0B3D2E;
+}
+
+.status-badge.cancelled {
+  background: linear-gradient(135deg, #FDE8E8, #FBD5D5);
+  color: #C53030;
+}

@@ -12,14 +12,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     try {
       const res = await loginApi(formData);
       if (res.data?.token) {
         localStorage.setItem("token", res.data.token);
-        const userData = res.data.user || { name: formData.name };
+        
+        const userData = res.data.user || { name: formData.name, role: "user" };
         localStorage.setItem("user", JSON.stringify(userData));
-        navigate("/dashboard");
+  
+        if (userData.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/market");
+        }
       } else {
         setError("Invalid response from server");
       }

@@ -1,8 +1,7 @@
-import "../styles/EditOrder.css";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { getOrderById, updateOrderDetails, getProducts } from "../services/api";
+import "../styles/Orders.css";
 
 const EditOrderPage = () => {
   const { id } = useParams();
@@ -59,12 +58,12 @@ const EditOrderPage = () => {
           const formattedItems = items.map((item) => {
             const pId = item.product_id || item.id;
             const matchedProduct = productsList.find(
-              (p) => String(p.id) === String(pId),
+              (p) => String(p.id) === String(pId)
             );
 
             const existingQty = parseInt(item.quantity, 10) || 1;
             const storeStock = Number(
-              matchedProduct?.stock_count ?? matchedProduct?.stock ?? 0,
+              matchedProduct?.stock_count ?? matchedProduct?.stock ?? 0
             );
 
             const totalAllowedStock = storeStock + existingQty;
@@ -102,11 +101,12 @@ const EditOrderPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddProduct = () => {
-    if (!selectedProductId) return;
+  // Select dropdown par direct product add karne ka function
+  const handleSelectProduct = (productId) => {
+    if (!productId) return;
 
     const product = availableProducts.find(
-      (p) => String(p.id) === String(selectedProductId),
+      (p) => String(p.id) === String(productId)
     );
 
     if (!product || product.is_deleted === 1) {
@@ -117,7 +117,7 @@ const EditOrderPage = () => {
     const storeStock = Number(product.stock_count ?? product.stock ?? 0);
 
     const existingItem = orderItems.find(
-      (item) => String(item.id) === String(product.id),
+      (item) => String(item.id) === String(product.id)
     );
 
     const currentQty = existingItem ? existingItem.quantity : 0;
@@ -135,14 +135,14 @@ const EditOrderPage = () => {
 
     setOrderItems((prevItems) => {
       const existingIndex = prevItems.findIndex(
-        (item) => String(item.id) === String(product.id),
+        (item) => String(item.id) === String(product.id)
       );
 
       if (existingIndex > -1) {
         return prevItems.map((item, index) =>
           index === existingIndex
             ? { ...item, quantity: item.quantity + 1 }
-            : item,
+            : item
         );
       } else {
         return [
@@ -162,6 +162,7 @@ const EditOrderPage = () => {
       }
     });
 
+    // Reset back to placeholder option
     setSelectedProductId("");
   };
 
@@ -184,7 +185,7 @@ const EditOrderPage = () => {
           }
           return it;
         })
-        .filter(Boolean),
+        .filter(Boolean)
     );
   };
 
@@ -194,7 +195,7 @@ const EditOrderPage = () => {
 
   const totalAmount = orderItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0,
+    0
   );
 
   const handleSubmit = async (e) => {
@@ -230,357 +231,258 @@ const EditOrderPage = () => {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="container mt-5 text-center">
-          <div className="spinner-border text-primary" role="status"></div>
-          <p className="mt-2 text-muted">Loading Order Details...</p>
-        </div>
-      </>
+      <div className="text-center-wrapper">
+        <div className="spinner"></div>
+        <p className="text-muted-small" style={{ marginTop: "0.5rem" }}>
+          Loading Order Details...
+        </p>
+      </div>
     );
   }
 
   return (
     <div style={{ backgroundColor: "#f4f6f9", minHeight: "100vh" }}>
-      <Navbar />
+      <main className="admin-page orders-page-container">
+        <div className="orders-form-card">
+          <h2 className="page-title">Edit Order #{id}</h2>
 
-      <main className="container py-4">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-8 col-lg-6">
-            <div
-              className="card border-0 shadow-sm p-4"
-              style={{ borderRadius: "12px" }}
-            >
-              <h2 className="fw-bold fs-3 mb-3">Edit Order #{id}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label">Order Status</label>
+              <select
+                className="form-select form-control-styled"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
 
-              <form onSubmit={handleSubmit}>
-                {/* Order Status */}
-                <div className="mb-3">
-                  <label className="form-label text-muted small fw-semibold">
-                    Order Status
-                  </label>
-                  <select
-                    className="form-select"
-                    style={{ backgroundColor: "#f0f4f9" }}
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Shipped">Shipped</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </div>
+            <div className="form-group">
+              <label className="form-label">Customer Name</label>
+              <input
+                type="text"
+                className="form-control form-control-styled"
+                name="customerName"
+                value={formData.customerName}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-                {/* Customer Name */}
-                <div className="mb-3">
-                  <label className="form-label text-muted small fw-semibold">
-                    Customer Name
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    style={{ backgroundColor: "#f0f4f9" }}
-                    name="customerName"
-                    value={formData.customerName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+            <div className="form-group">
+              <label className="form-label">Customer Email</label>
+              <input
+                type="email"
+                className="form-control form-control-styled"
+                name="customerEmail"
+                value={formData.customerEmail}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-                {/* Customer Email */}
-                <div className="mb-3">
-                  <label className="form-label text-muted small fw-semibold">
-                    Customer Email
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    style={{ backgroundColor: "#f0f4f9" }}
-                    name="customerEmail"
-                    value={formData.customerEmail}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+            <div className="form-group">
+              <label className="form-label">Shipping Address</label>
+              <textarea
+                className="form-textarea form-control-styled"
+                name="shippingAddress"
+                rows="3"
+                value={formData.shippingAddress}
+                onChange={handleChange}
+                required
+              ></textarea>
+            </div>
 
-                {/* Shipping Address */}
-                <div className="mb-3">
-                  <label className="form-label text-muted small fw-semibold">
-                    Shipping Address
-                  </label>
-                  <textarea
-                    className="form-control"
-                    style={{ backgroundColor: "#f0f4f9" }}
-                    name="shippingAddress"
-                    rows="3"
-                    value={formData.shippingAddress}
-                    onChange={handleChange}
-                    required
-                  ></textarea>
-                </div>
+            <div className="form-group-lg">
+              <label className="form-label">Add Product</label>
+              <select
+                className="form-select form-control-styled"
+                value={selectedProductId}
+                onChange={(e) => handleSelectProduct(e.target.value)}
+              >
+                <option value="">Select a product to add...</option>
+                {availableProducts.map((p) => {
+                  const currentStock = Number(p.stock_count ?? p.stock ?? 0);
+                  const isOutOfStock = currentStock <= 0;
+                  return (
+                    <option key={p.id} value={p.id} disabled={isOutOfStock}>
+                      {p.name} - ${parseFloat(p.price).toFixed(2)}{" "}
+                      {isOutOfStock
+                        ? "(Out of Stock)"
+                        : `(Stock: ${currentStock})`}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
 
-                {/* Add Product Dropdown */}
-                <div className="mb-4">
-                  <label className="form-label text-muted small fw-semibold">
-                    Add Product
-                  </label>
-                  <div className="d-flex gap-2">
-                    <select
-                      className="form-select"
-                      value={selectedProductId}
-                      onChange={(e) => setSelectedProductId(e.target.value)}
-                    >
-                      <option value="">Select a product</option>
-                      {availableProducts.map((p) => {
-                        const currentStock = Number(
-                          p.stock_count ?? p.stock ?? 0,
-                        );
-                        const isOutOfStock = currentStock <= 0;
-                        return (
-                          <option
-                            key={p.id}
-                            value={p.id}
-                            disabled={isOutOfStock}
-                          >
-                            {p.name} - ${parseFloat(p.price).toFixed(2)}{" "}
-                            {isOutOfStock
-                              ? "(Out of Stock)"
-                              : `(Stock: ${currentStock})`}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <button
-                      type="button"
-                      className="btn btn-primary px-4 fw-semibold"
-                      onClick={handleAddProduct}
-                      disabled={!selectedProductId}
-                    >
-                      Add
-                    </button>
-                  </div>
-                </div>
-
-                {/* Items List */}
-                {orderItems.length > 0 && (
-                  <div className="border rounded-3 p-3 mb-4 bg-light-subtle">
-                    {orderItems.map((item, index) => (
-                      <div
-                        key={`${item.id}-${index}`}
-                        className="d-flex align-items-center justify-content-between py-2 border-bottom gap-2"
-                      >
-                        {/* Product Info Section */}
-                        <div
-                          className="d-flex align-items-center gap-2 overflow-hidden flex-shrink-1 me-2"
-                          style={{ minWidth: 0 }}
-                        >
-                          {item.image ? (
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                objectFit: "cover",
-                                borderRadius: "6px",
-                                flexShrink: 0,
-                              }}
-                            />
-                          ) : (
-                            <div
-                              className="bg-secondary text-white rounded d-flex align-items-center justify-content-center flex-shrink-0"
-                              style={{ width: "40px", height: "40px" }}
-                            >
-                              📦
-                            </div>
-                          )}
-                          <div className="text-truncate">
-                            <div className="fw-bold text-dark text-truncate small">
-                              {item.name}
-                            </div>
-                            <div
-                              className="text-muted extra-small"
-                              style={{ fontSize: "0.75rem" }}
-                            >
-                              ${item.price.toFixed(2)} each
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="d-flex align-items-center gap-2 flex-shrink-0">
-                          <div
-                            className="input-group input-group-sm flex-nowrap"
-                            style={{ width: "80px" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-outline-danger px-2"
-                              onClick={() => handleQuantityChange(index, -1)}
-                            >
-                              -
-                            </button>
-                            <input
-                              type="number"
-                              min={0}
-                              max={item.stock}
-                              value={item.quantity === 0 ? "" : item.quantity}
-                              className="form-control"
-                              placeholder="0"
-                              onChange={(e) => {
-                                const rawVal = e.target.value;
-
-                                // Empty string handling (Backspace dabane par)
-                                if (rawVal === "") {
-                                  setOrderItems((prevItems) =>
-                                    prevItems.map((it, i) =>
-                                      i === index ? { ...it, quantity: 0 } : it,
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                const val = parseInt(rawVal, 10);
-                                const newQty = isNaN(val) ? 0 : val;
-
-                                if (newQty > item.stock) {
-                                  alert(
-                                    `Maximum available stock for ${item.name} is ${item.stock}`,
-                                  );
-                                  return;
-                                }
-
-                                setOrderItems((prevItems) =>
-                                  prevItems.map((it, i) =>
-                                    i === index
-                                      ? { ...it, quantity: newQty }
-                                      : it,
-                                  ),
-                                );
-                              }}
-                              onBlur={() => {
-                                // Input focus out hone par agar 0 ho to minimum 1 reset kar de
-                                if (item.quantity === 0) {
-                                  setOrderItems((prevItems) =>
-                                    prevItems.map((it, i) =>
-                                      i === index ? { ...it, quantity: 1 } : it,
-                                    ),
-                                  );
-                                }
-                              }}
-                            />
-                            <button
-                              type="button"
-                              className="btn btn-outline-success px-2"
-                              onClick={() => handleQuantityChange(index, 1)}
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          <span
-                            className="fw-bold text-end small"
-                            style={{ minWidth: "60px", whiteSpace: "nowrap" }}
-                          >
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </span>
-
-                          <button
-                            type="button"
-                            className="btn btn-link text-danger p-0 ms-1"
-                            onClick={() => handleRemoveItem(index)}
-                            title="Remove item"
-                          >
-                            <i className="bi bi-trash"></i>
-                          </button>
+            {orderItems.length > 0 && (
+              <div className="items-summary-box">
+                {orderItems.map((item, index) => (
+                  <div key={`${item.id}-${index}`} className="item-row">
+                    <div className="item-info">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="item-img"
+                        />
+                      ) : (
+                        <div className="item-img-placeholder">📦</div>
+                      )}
+                      <div className="item-details">
+                        <div className="item-title">{item.name}</div>
+                        <div className="item-subtext">
+                          ${item.price.toFixed(2)} each
                         </div>
                       </div>
-                    ))}
+                    </div>
 
-                    <div className="d-flex justify-content-between align-items-center pt-3 mt-2">
-                      <span className="fw-bold fs-5">Total</span>
-                      <span className="fw-bold fs-4">
-                        ${totalAmount.toFixed(2)}
+                    <div className="item-qty-wrapper">
+                      <div className="qty-counter-group">
+                        <button
+                          type="button"
+                          className="btn-minus"
+                          onClick={() => handleQuantityChange(index, -1)}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min={0}
+                          max={item.stock}
+                          value={item.quantity === 0 ? "" : item.quantity}
+                          placeholder="0"
+                          onChange={(e) => {
+                            const rawVal = e.target.value;
+
+                            if (rawVal === "") {
+                              setOrderItems((prevItems) =>
+                                prevItems.map((it, i) =>
+                                  i === index ? { ...it, quantity: 0 } : it
+                                )
+                              );
+                              return;
+                            }
+
+                            const val = parseInt(rawVal, 10);
+                            const newQty = isNaN(val) ? 0 : val;
+
+                            if (newQty > item.stock) {
+                              alert(
+                                `Maximum available stock for ${item.name} is ${item.stock}`
+                              );
+                              return;
+                            }
+
+                            setOrderItems((prevItems) =>
+                              prevItems.map((it, i) =>
+                                i === index
+                                  ? { ...it, quantity: newQty }
+                                  : it
+                              )
+                            );
+                          }}
+                          onBlur={() => {
+                            if (item.quantity === 0) {
+                              setOrderItems((prevItems) =>
+                                prevItems.map((it, i) =>
+                                  i === index ? { ...it, quantity: 1 } : it
+                                )
+                              );
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="btn-plus"
+                          onClick={() => handleQuantityChange(index, 1)}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <span className="item-total-price">
+                        ${(item.price * item.quantity).toFixed(2)}
                       </span>
+
+                      <button
+                        type="button"
+                        className="btn-icon-danger"
+                        onClick={() => handleRemoveItem(index)}
+                        title="Remove item"
+                      >
+                        <i className="bi bi-trash"></i>
+                      </button>
                     </div>
                   </div>
-                )}
+                ))}
 
-                {/* Payment Method */}
-                <div className="mb-4">
-                  <label className="form-label text-muted small fw-semibold d-block">
-                    Payment Method
-                  </label>
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <label
-                        className={`border rounded p-3 d-flex align-items-center gap-2 w-100 ${
-                          formData.paymentMethod === "Cash on Delivery"
-                            ? "border-primary bg-light"
-                            : ""
-                        }`}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="Cash on Delivery"
-                          checked={
-                            formData.paymentMethod === "Cash on Delivery"
-                          }
-                          onChange={handleChange}
-                        />
-                        <span className="small fw-semibold">
-                          Cash on Delivery
-                        </span>
-                      </label>
-                    </div>
-                    <div className="col-6">
-                      <label
-                        className={`border rounded p-3 d-flex align-items-center gap-2 w-100 ${
-                          formData.paymentMethod === "Card (Stripe)"
-                            ? "border-primary bg-light"
-                            : ""
-                        }`}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="Card (Stripe)"
-                          checked={formData.paymentMethod === "Card (Stripe)"}
-                          onChange={handleChange}
-                        />
-                        <span className="small fw-semibold">Card (Stripe)</span>
-                      </label>
-                    </div>
-                  </div>
+                <div className="order-grand-total">
+                  <span>Total</span>
+                  <span>${totalAmount.toFixed(2)}</span>
                 </div>
+              </div>
+            )}
 
-                {/* Action Buttons */}
-                <div className="d-flex gap-2 pt-2">
-                  <button
-                    type="button"
-                    className="btn btn-light w-50 py-2 fw-semibold"
-                    style={{ backgroundColor: "#f4f6f9" }}
-                    onClick={() => navigate("/orders")}
-                    disabled={saving}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary w-50 py-2 fw-semibold"
-                    disabled={saving}
-                  >
-                    {saving ? "Saving Changes..." : "Save Changes"}
-                  </button>
-                </div>
-              </form>
+            <div className="form-group-lg">
+              <label className="form-label">Payment Method</label>
+              <div className="radio-group-grid">
+                <label
+                  className={`radio-card ${
+                    formData.paymentMethod === "Cash on Delivery" ? "active" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="Cash on Delivery"
+                    checked={formData.paymentMethod === "Cash on Delivery"}
+                    onChange={handleChange}
+                  />
+                  Cash on Delivery
+                </label>
+                <label
+                  className={`radio-card ${
+                    formData.paymentMethod === "Card (Stripe)" ? "active" : ""
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="Card (Stripe)"
+                    checked={formData.paymentMethod === "Card (Stripe)"}
+                    onChange={handleChange}
+                  />
+                  Card (Stripe)
+                </label>
+              </div>
             </div>
-          </div>
+
+            <div className="button-row">
+              <button
+                type="button"
+                className="btn-light"
+                onClick={() => navigate("/orders")}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={saving}
+              >
+                {saving ? "Saving Changes..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
         </div>
       </main>
     </div>

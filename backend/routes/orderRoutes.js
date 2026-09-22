@@ -9,11 +9,13 @@ const {
   updateOrder,
   getOrderById,
   editOrder,
+  getMyOrders,
 } = require("../controllers/orderController");
 
 router.use(verifyToken);
 
 router.get("/", getOrders);
+router.get("/my-orders", getMyOrders);
 router.get("/deleted", getDeletedOrders);
 router.get("/:id", getOrderById);
 router.post("/", createOrder);

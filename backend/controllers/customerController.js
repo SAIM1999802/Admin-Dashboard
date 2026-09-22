@@ -1,8 +1,19 @@
 const CustomerModel = require('../models/customerModel');
 
+// Helper function to safely get authenticated User ID from request token payload
+const getAuthUserId = (req) => req.user?.id || req.user?.userId;
+
 exports.getCustomers = async (req, res) => {
   try {
-    const customers = await CustomerModel.getAllCustomers();
+    const userId = getAuthUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized access. User ID missing.',
+      });
+    }
+
+    const customers = await CustomerModel.getAllCustomers(userId);
 
     const formattedCustomers = customers.map((cust) => ({
       id: cust.id,
@@ -33,6 +44,14 @@ exports.getCustomers = async (req, res) => {
 exports.getCustomerById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = getAuthUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized access. User ID missing.',
+      });
+    }
 
     if (isNaN(id)) {
       return res.status(400).json({
@@ -41,7 +60,7 @@ exports.getCustomerById = async (req, res) => {
       });
     }
 
-    const customer = await CustomerModel.getCustomerById(id);
+    const customer = await CustomerModel.getCustomerById(id, userId);
 
     if (!customer) {
       return res.status(404).json({
@@ -62,6 +81,7 @@ exports.getCustomerById = async (req, res) => {
         phone: customer.phone || '',
         address: customer.address || '',
         orders: Number(customer.total_orders || 0),
+        total_spent: Number(customer.total_spent || 0),
         created_at: customer.created_at,
       },
     });
@@ -76,10 +96,18 @@ exports.getCustomerById = async (req, res) => {
 
 exports.createCustomer = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const userId = getAuthUserId(req);
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized access. User ID missing.',
+      });
+    }
+
+    const { name, email, phone, address } = req.body;
 
     const existingCustomer = email
-      ? await CustomerModel.getCustomerByEmail(email.trim().toLowerCase())
+      ? await CustomerModel.getCustomerByEmail(email.trim().toLowerCase(), userId)
       : null;
 
     if (existingCustomer) {
@@ -89,10 +117,14 @@ exports.createCustomer = async (req, res) => {
       });
     }
 
-    const newCustomer = await CustomerModel.createCustomer(
-      name ? name.trim() : '',
-      email ? email.trim().toLowerCase() : ''
-    );
+    const customerData = {
+      name: name ? name.trim() : '',
+      email: email ? email.trim().toLowerCase() : '',
+      phone: phone ? phone.trim() : '',
+      address: address ? address.trim() : '',
+    };
+
+    const newCustomer = await CustomerModel.createCustomer(customerData, userId);
     const formattedId = `#CUST-${String(newCustomer.id).padStart(3, '0')}`;
 
     return res.status(201).json({
@@ -103,6 +135,8 @@ exports.createCustomer = async (req, res) => {
         custom_id: formattedId,
         name: newCustomer.name,
         email: newCustomer.email,
+        phone: newCustomer.phone,
+        address: newCustomer.address,
         orders: 0,
       },
     });
@@ -118,20 +152,67 @@ exports.createCustomer = async (req, res) => {
 exports.getCustomerDetails = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = getAuthUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access",
+      });
+    }
+
     const customer = await CustomerModel.getCustomerById(id, userId);
-    if (!customer)
-      return res.status(404).json({ message: 'customer not found' });
-    res.status(200).json(customer);
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
+    }
+
+    // Fetch order history specifically
+    const orderHistory = await CustomerModel.getCustomerOrders(id, userId);
+
+    const formattedId = `#CUST-${String(customer.id).padStart(3, "0")}`;
+
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate");
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: customer.id,
+        custom_id: formattedId,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone || "",
+        address: customer.address || "",
+        orders: Number(customer.total_orders || customer.orders || 0),
+        total_orders: Number(customer.total_orders || customer.orders || 0),
+        total_spent: Number(customer.total_spent || 0),
+        created_at: customer.created_at,
+        orderHistory: orderHistory || [], // Array pass kar rahe hain yahan
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching customer details:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Server error",
+    });
   }
 };
 
 exports.updateCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, address } = req.body;
+    const userId = getAuthUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized access. User ID missing.',
+      });
+    }
 
     if (isNaN(id)) {
       return res.status(400).json({
@@ -140,13 +221,15 @@ exports.updateCustomer = async (req, res) => {
       });
     }
 
-    const result = await CustomerModel.updateCustomer(
-      id,
-      name ? name.trim() : '',
-      email ? email.trim().toLowerCase() : '',
-      phone ? phone.trim() : null,
-      address ? address.trim() : null
-    );
+    const { name, email, phone, address } = req.body;
+    const customerData = {
+      name: name ? name.trim() : '',
+      email: email ? email.trim().toLowerCase() : '',
+      phone: phone ? phone.trim() : '',
+      address: address ? address.trim() : '',
+    };
+
+    const result = await CustomerModel.updateCustomer(id, customerData, userId);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -171,6 +254,14 @@ exports.updateCustomer = async (req, res) => {
 exports.deleteCustomer = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = getAuthUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized access. User ID missing.',
+      });
+    }
 
     if (isNaN(id)) {
       return res.status(400).json({
@@ -179,7 +270,7 @@ exports.deleteCustomer = async (req, res) => {
       });
     }
 
-    const result = await CustomerModel.deleteCustomer(id);
+    const result = await CustomerModel.deleteCustomer(id, userId);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({

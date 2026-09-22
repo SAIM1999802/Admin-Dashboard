@@ -8,27 +8,37 @@ const Customers = () => {
   const [search, setSearch] = useState("");
   const [customersList, setCustomersList] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   const fetchCustomers = async () => {
     try {
       setLoading(true);
+
       const response = await getCustomers();
-      const customersData = response?.data?.data || response?.data || [];
+      const customersData =
+        response?.data?.data || response?.data || [];
 
       const formattedList = [];
+
       for (let i = 0; i < customersData.length; i++) {
         const cust = customersData[i];
+
         formattedList.push({
-          id: cust.custom_id || `#${String(cust.id).padStart(3, "0")}`,
+          id:
+            cust.custom_id ||
+            `#${String(cust.id).padStart(3, "0")}`,
           dbId: cust.id,
           name: cust.name || "Unknown Customer",
           email: cust.email || "No Email",
-          orders: Number(cust.orders ?? cust.total_orders ?? 0),
+          orders: Number(
+            cust.orders ?? cust.total_orders ?? 0
+          ),
         });
       }
 
       formattedList.sort((a, b) => a.dbId - b.dbId);
+
       setCustomersList(formattedList);
     } catch (error) {
       console.error("Error fetching customer data:", error);
@@ -44,15 +54,27 @@ const Customers = () => {
   const handleDelete = async (e, id) => {
     e.stopPropagation();
 
-    if (!window.confirm("Are you sure you want to delete this customer?")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this customer?"
+      )
+    ) {
       return;
     }
+
     try {
       await deleteCustomer(id);
-      setCustomersList((prev) => prev.filter((cust) => cust.dbId !== id));
+
+      setCustomersList((prev) =>
+        prev.filter((cust) => cust.dbId !== id)
+      );
     } catch (error) {
       console.error("Error deleting customer:", error);
-      alert(error.response?.data?.message || "Failed to delete customer");
+
+      alert(
+        error.response?.data?.message ||
+          "Failed to delete customer"
+      );
     }
   };
 
@@ -67,6 +89,7 @@ const Customers = () => {
 
   const filteredCustomers = customersList.filter((cust) => {
     const term = search.toLowerCase().trim();
+
     return (
       cust.name.toLowerCase().includes(term) ||
       cust.email.toLowerCase().includes(term) ||
@@ -78,7 +101,11 @@ const Customers = () => {
     if (loading) {
       return (
         <tr>
-          <td colSpan="5" className="text-center py-4 text-muted">
+          <td
+            colSpan="5"
+            className="text-center py-4"
+            style={{ color: "#64748b" }}
+          >
             Fetching live customer records...
           </td>
         </tr>
@@ -88,102 +115,145 @@ const Customers = () => {
     if (filteredCustomers.length === 0) {
       return (
         <tr>
-          <td colSpan="5" className="text-center py-4 text-muted">
+          <td
+            colSpan="5"
+            className="text-center py-4"
+            style={{ color: "#64748b" }}
+          >
             No customers found.
           </td>
         </tr>
       );
     }
 
-    const customerRows = [];
-    for (let i = 0; i < filteredCustomers.length; i++) {
-      const customer = filteredCustomers[i];
-      customerRows.push(
-        <tr
-          key={customer.dbId || customer.id}
-          onClick={() => handleRowClick(customer.dbId)}
-          style={{ cursor: "pointer" }}
-          className="clickable-row"
+    return filteredCustomers.map((customer, i) => (
+      <tr
+        key={customer.dbId || customer.id}
+        onClick={() => handleRowClick(customer.dbId)}
+        className="clickable-row"
+      >
+        <td
+          style={{
+            color: "#ff5000",
+            fontWeight: "700",
+          }}
         >
-          <td style={{ color: "#0969d7", fontWeight: "600" }}>
-            #CUST-{i+1}
-          </td>
-          <td>{customer.name}</td>
-          <td>{customer.email}</td>
-          <td>
-            {customer.orders}{" "}
-            {customer.orders === 1 ? "Order" : "Orders"}
-          </td>
-          <td>
-            <div className="d-flex gap-2">
-              <button
-                className="btn-action-edit custom-tooltip"
-                onClick={(e) => handleEdit(e, customer.dbId)}
-                data-title="Edit Customer"
-              >
-                <i className="bi bi-pencil-fill me-1"></i>
-                Edit
-              </button>
+          #{i + 1}
+        </td>
 
-              <button
-                className="btn-action-delete custom-tooltip"
-                onClick={(e) => handleDelete(e, customer.dbId)}
-                data-title="Delete Customer"
-              >
-                <i className="bi bi-trash-fill me-1"></i>
-                Delete
-              </button>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-    return customerRows;
+        <td>{customer.name}</td>
+
+        <td>{customer.email}</td>
+
+        <td>
+          {customer.orders}{" "}
+          {customer.orders === 1 ? "Order" : "Orders"}
+        </td>
+
+        <td>
+          <div className="d-flex gap-2">
+            <button
+              type="button"
+              className="btn-action-edit"
+              onClick={(e) =>
+                handleEdit(e, customer.dbId)
+              }
+            >
+              <i className="bi bi-pencil-fill me-1"></i>
+              Edit
+            </button>
+
+            <button
+              type="button"
+              className="btn-action-delete"
+              onClick={(e) =>
+                handleDelete(e, customer.dbId)
+              }
+            >
+              <i className="bi bi-trash-fill me-1"></i>
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    ));
   };
 
   return (
     <>
       <Navbar />
 
-      <main className="admin-page">
-        <div className="page-header">
-          <h1 className="page-title">Customer Directory</h1>
+      <main className="admin-page container">
+        <div className="row">
+          <div className="col-12">
 
-          <button
-            className="primary-btn"
-            onClick={() => navigate("/customers/add")}
-          >
-            <i className="bi bi-plus-lg me-1"></i>
-            Add Customer
-          </button>
-        </div>
+            {/* PAGE HEADER */}
+            <div className="page-header">
+              <h1>
+                Customer Directory
+              </h1>
 
-        <div className="search-box">
-          <i className="bi bi-search"></i>
+              <button
+                type="button"
+                className="primary-btn"
+                onClick={() =>
+                  navigate("/customers/add")
+                }
+              >
+                <i className="bi bi-plus-lg me-1"></i>
+                Add Customer
+              </button>
+            </div>
 
-          <input
-            type="text"
-            placeholder="Search by Name or Email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+            {/* SEARCH */}
+            <div className="search-box">
+              <i className="bi bi-search"></i>
 
-        <div className="table-card">
-          <div className="tab-scroll">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th className="tab-scroll">CUSTOMER ID</th>
-                  <th className="tab-scroll">NAME</th>
-                  <th className="tab-scroll">EMAIL</th>
-                  <th className="tab-scroll">TOTAL ORDERS PLACED</th>
-                  <th className="tab-scroll">ACTIONS</th>
-                </tr>
-              </thead>
+              <input
+                type="text"
+                placeholder="Search by Name or Email..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+              />
+            </div>
 
-              <tbody>{renderCustomerRows()}</tbody>
-            </table>
+            {/* TABLE */}
+            <div className="table-card">
+              <div className="tab-scroll">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: "15%" }}>
+                        ID
+                      </th>
+
+                      <th>
+                        NAME
+                      </th>
+
+                      <th>
+                        EMAIL
+                      </th>
+
+                      <th>
+                        TOTAL ORDERS PLACED
+                      </th>
+
+                      <th style={{ width: "25%" }}>
+                        ACTIONS
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {renderCustomerRows()}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         </div>
       </main>
@@ -192,3 +262,4 @@ const Customers = () => {
 };
 
 export default Customers;
+

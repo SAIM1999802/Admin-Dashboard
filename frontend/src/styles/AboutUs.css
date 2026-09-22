@@ -1,0 +1,177 @@
+.about-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FBF8F2 0%, #F5F0E6 100%);
+  color: #2C3E3A;
+  font-family: inherit;
+}
+
+.about-main { flex: 1; }
+
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.about-hero {
+  padding: 90px 0 70px;
+  text-align: center;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FBF8F2 100%);
+  border-bottom: 1px solid #E0D9CC;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.08), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.about-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -150px; left: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(74, 124, 111, 0.1), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.about-eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #FF6B35;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.about-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 2.9rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, #0B3D2E 0%, #14503E 60%, #4A7C6F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.about-sub {
+  max-width: 660px;
+  margin: 0 auto;
+  font-size: 1.15rem;
+  line-height: 1.65;
+  color: #4A5B55;
+  position: relative;
+  z-index: 1;
+}
+
+.about-mission { padding: 90px 0; }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.about-content h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 2.1rem;
+  font-weight: 600;
+  margin-bottom: 22px;
+  color: #0B3D2E;
+  letter-spacing: -0.01em;
+}
+
+.about-content p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #4A5B55;
+  margin-bottom: 18px;
+}
+
+.about-image-wrapper {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 20px 45px rgba(11, 61, 46, 0.14),
+    0 8px 16px rgba(11, 61, 46, 0.06);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-image-wrapper:hover {
+  transform: translateY(-4px);
+}
+
+.about-img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+}
+
+.about-stats {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FBF8F2 100%);
+  padding: 70px 0;
+  border-top: 1px solid #E0D9CC;
+  border-bottom: 1px solid #E0D9CC;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+  text-align: center;
+}
+
+.stat-card {
+  padding: 24px 16px;
+  border-radius: 16px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card:hover { transform: translateY(-4px); }
+
+.stat-card h3 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 2.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.stat-card p {
+  font-size: 0.9rem;
+  color: #7A8B85;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .about-hero { padding: 60px 0 50px; }
+  .about-title { font-size: 2.2rem; }
+  .about-grid { grid-template-columns: 1fr; gap: 36px; }
+  .stats-grid { grid-template-columns: 1fr; gap: 20px; }
+}

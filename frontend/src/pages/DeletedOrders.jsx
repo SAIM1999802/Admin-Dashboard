@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
+
 import { useNavigate } from "react-router-dom";
 import { getDeletedOrders } from "../services/api";
 import "../styles/Orders.css";
@@ -56,7 +56,7 @@ const DeletedOrders = () => {
 
   return (
     <>
-      <Navbar />
+
       <main className="admin-page">
         <div className="page-header d-flex justify-content-between align-items-center mb-4">
           <h1 className="page-title text-danger">Deleted Orders Archive</h1>

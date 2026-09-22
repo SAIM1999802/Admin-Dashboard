@@ -1,10 +1,10 @@
-const bcrypt = require("bcryptjs"); // Typo fix: bcrypt
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 
 exports.signup = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -27,17 +27,22 @@ exports.signup = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
-    const userId = await userModel.create(name, email, passwordHash);
+    
+    // Default role 'user' rakha gaya hai agar request body mein role paas na ho
+    const userRole = role || "user";
+    const userId = await userModel.create(name, email, passwordHash, userRole);
 
-    const token = jwt.sign({ id: userId, email }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: userId, email, role: userRole },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
     return res.status(201).json({
       success: true,
       message: "Signup completed",
       token,
-      user: { id: userId, name, email },
+      user: { id: userId, name, email, role: userRole },
     });
   } catch (e) {
     return res.status(500).json({ success: false, message: e.message });
@@ -68,12 +73,13 @@ exports.login = async (req, res) => {
         .json({ success: false, message: "Wrong Credentials" });
     }
 
+    // Database user object se role read karna
+    const userRole = user.role || "user";
+
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: userRole },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "1d",
-      }
+      { expiresIn: "1d" }
     );
 
     return res.status(200).json({
@@ -84,6 +90,7 @@ exports.login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: userRole,
       },
     });
   } catch (e) {
@@ -123,13 +130,12 @@ exports.updateCredentials = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
-    // FIX: Updated function call to match userModel.updateUser (id, name, passwordHash)
     await userModel.updateUser(userId, username, newPasswordHash);
 
     return res.status(200).json({
       success: true,
       message: "Credentials updated successfully",
-      user: { id: userId, name: username, email: user.email },
+      user: { id: userId, name: username, email: user.email, role: user.role || "user" },
     });
   } catch (e) {
     return res.status(500).json({ success: false, message: e.message });

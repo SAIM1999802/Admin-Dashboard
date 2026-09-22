@@ -1,0 +1,235 @@
+/* ==========================================
+   VELURE NAVBAR - SMOOTH PALETTE
+   ========================================== */
+
+   :root {
+    --velure-forest:       #0B3D2E;
+    --velure-forest-deep:  #062018;
+    --velure-forest-mid:   #14503E;
+    --velure-sage:         #4A7C6F;
+    --velure-sage-light:   #6B9D90;
+    --velure-cream:        #F5F0E6;
+    --velure-peach:        #FFE8D6;
+    --velure-orange:       #FF6B35;
+    --velure-orange-deep:  #E85A2A;
+    --velure-white:        #FFFFFF;
+    --velure-charcoal:     #2C3E3A;
+    --velure-gray:         #7A8B85;
+    --velure-border:       #E0D9CC;
+  
+    --nav-grad:      linear-gradient(135deg, #0B3D2E 0%, #062018 100%);
+    --orange-grad:   linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%);
+    --nav-inset:     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  
+  .velure-header {
+    width: 100%;
+    background: var(--nav-grad);
+    padding: 12px 32px;
+    box-sizing: border-box;
+    box-shadow:
+      var(--nav-inset),
+      0 8px 24px rgba(11, 61, 46, 0.22);
+    border-bottom: 1px solid rgba(255, 232, 214, 0.06);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .velure-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    gap: 20px;
+  }
+  
+  /* Brand Logo */
+  .velure-logo {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 24px;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--velure-cream);
+    cursor: pointer;
+    letter-spacing: -0.5px;
+    user-select: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: color 0.25s ease;
+  }
+  
+  .velure-logo:hover { color: var(--velure-peach); }
+  
+  /* Center Navigation Pill */
+  .velure-nav-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, rgba(245, 240, 230, 0.1), rgba(245, 240, 230, 0.04));
+    padding: 6px;
+    border-radius: 40px;
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(245, 240, 230, 0.1);
+    box-shadow:
+      var(--nav-inset),
+      0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .velure-nav-item {
+    color: rgba(245, 240, 230, 0.72) !important;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .velure-nav-item .dot {
+    width: 5px;
+    height: 5px;
+    background: var(--velure-peach);
+    border-radius: 50%;
+    display: none;
+    box-shadow: 0 0 8px rgba(255, 232, 214, 0.9);
+  }
+  
+  .velure-nav-item:hover {
+    color: var(--velure-white);
+    background: rgba(245, 240, 230, 0.08);
+  }
+  
+  .velure-nav-item.active {
+    color: var(--velure-white);
+    font-weight: 600;
+    background: var(--orange-grad);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+  }
+  
+  .velure-nav-item.active .dot {
+    display: inline-block;
+  }
+  
+  /* Right Actions */
+  .velure-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .icon-btn {
+    background: rgba(245, 240, 230, 0.06);
+    border: 1px solid transparent;
+    color: var(--velure-cream);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9;
+    transition: all 0.25s ease;
+  }
+  
+  .icon-btn:hover {
+    opacity: 1;
+    color: var(--velure-peach);
+    background: rgba(245, 240, 230, 0.14);
+    border-color: rgba(245, 240, 230, 0.15);
+    transform: translateY(-1px);
+  }
+  
+  /* User Profile Orange Pill */
+  .velure-profile-wrapper {
+    position: relative;
+  }
+  
+  .velure-user-btn {
+    background: var(--orange-grad);
+    color: var(--velure-white);
+    border: none;
+    padding: 9px 22px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow:
+      0 4px 14px rgba(255, 107, 53, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  
+  .velure-user-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 20px rgba(255, 107, 53, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Dropdown Menu */
+  .velure-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 12px);
+    background: var(--velure-white);
+    min-width: 180px;
+    border-radius: 14px;
+    box-shadow:
+      0 20px 40px rgba(11, 61, 46, 0.18),
+      0 6px 12px rgba(11, 61, 46, 0.08);
+    padding: 8px;
+    z-index: 1000;
+    border: 1px solid var(--velure-border);
+    animation: dropdown-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  @keyframes dropdown-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  .velure-dropdown-menu button {
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--velure-charcoal);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .velure-dropdown-menu button:hover {
+    background: var(--velure-cream);
+    color: var(--velure-forest);
+  }
+  
+  .velure-dropdown-menu .logout-btn {
+    color: var(--velure-orange-deep);
+  }
+  
+  .velure-dropdown-menu .logout-btn:hover {
+    background: var(--velure-peach);
+  }
+  
+  .velure-dropdown-divider {
+    height: 1px;
+    background: var(--velure-border);
+    margin: 6px 4px;
+  }

@@ -1,22 +1,18 @@
-// routes/productRoutes.js
 const express = require('express');
 const router = express.Router();
-const verifyToken = require('../middleware/authMiddleware'); // Verify token path
+const verifyToken = require('../middleware/authMiddleware'); 
+
 const { 
   getProducts, 
   getProductDetails, 
   addProduct, 
   updateProduct, 
-  deleteProduct 
+  deleteProduct
 } = require('../controllers/productController');
-
-// All product routes require token
-router.use(verifyToken);
 
 router.get('/', getProducts);
 router.get('/:id', getProductDetails);
-router.post('/', addProduct);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
-
+router.post('/', verifyToken, addProduct);
+router.put('/:id', verifyToken, updateProduct);
+router.delete('/:id', verifyToken, deleteProduct);
 module.exports = router;

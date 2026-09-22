@@ -4,19 +4,38 @@ import { useNavigate } from "react-router-dom";
 import { getOrders, getDeletedOrders, deleteOrder } from "../services/api";
 import "../styles/Orders.css";
 
+const extractOrdersArray = (res) => {
+  if (Array.isArray(res)) return res;
+  if (Array.isArray(res?.data)) return res.data;
+  if (Array.isArray(res?.data?.data)) return res.data.data;
+  return [];
+};
+
+const parseAmount = (order) => {
+  if (!order) return 0;
+  const rawVal =
+    order.totalAmount ?? order.total_amount ?? order.amount ?? order.total ?? order.price ?? 0;
+  const numericVal = parseFloat(String(rawVal).replace(/[^0-9.-]+/g, ""));
+  return isNaN(numericVal) ? 0 : numericVal;
+};
+
+const formatDate = (order) => {
+  if (!order) return new Date().toLocaleDateString();
+  const rawDate =
+    order.createdAt || order.created_at || order.order_date || order.date;
+
+  if (!rawDate) return new Date().toLocaleDateString();
+
+  const d = new Date(rawDate);
+  return isNaN(d.getTime()) ? String(rawDate) : d.toLocaleDateString();
+};
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
 
   const navigate = useNavigate();
-
-  const extractOrdersArray = (res) => {
-    if (Array.isArray(res)) return res;
-    if (Array.isArray(res?.data)) return res.data;
-    if (Array.isArray(res?.data?.data)) return res.data.data;
-    return [];
-  };
 
   const fetchOrdersList = async () => {
     try {
@@ -28,7 +47,6 @@ const Orders = () => {
     }
   };
 
-  // Fetch Deleted Orders
   const fetchDeletedOrdersList = async () => {
     try {
       const response = await getDeletedOrders();
@@ -40,17 +58,31 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    fetchOrdersList();
-  }, []);
+    if (statusFilter === "Deleted") {
+      fetchDeletedOrdersList();
+    } else {
+      fetchOrdersList();
+    }
+
+    const intervalId = setInterval(() => {
+      if (statusFilter === "Deleted") {
+        fetchDeletedOrdersList();
+      } else {
+        fetchOrdersList();
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [statusFilter]);
 
   const handleFilterChange = (e) => {
     const selectedValue = e.target.value;
     setStatusFilter(selectedValue);
 
     if (selectedValue === "Deleted") {
-      fetchDeletedOrdersList(); 
+      fetchDeletedOrdersList();
     } else {
-      fetchOrdersList(); 
+      fetchOrdersList();
     }
   };
 
@@ -77,7 +109,7 @@ const Orders = () => {
 
   const handleEdit = (e, order) => {
     e.stopPropagation();
-    const orderId = order.id || order._id;
+    const orderId = order?.id || order?._id;
 
     if (orderId) {
       navigate(`/orders/edit/${orderId}`);
@@ -90,92 +122,112 @@ const Orders = () => {
     navigate(`/orders/details/${id}`);
   };
 
-  const parseAmount = (order) => {
-    const rawVal =
-      order.totalAmount ?? order.total_amount ?? order.amount ?? order.total ?? order.price ?? 0;
-    const numericVal = parseFloat(String(rawVal).replace(/[^0-9.-]+/g, ""));
-    return isNaN(numericVal) ? 0 : numericVal;
-  };
-
-  const formatDate = (order) => {
-    const rawDate =
-      order.createdAt || order.created_at || order.order_date || order.date;
-
-    if (!rawDate) return new Date().toLocaleDateString();
-
-    const d = new Date(rawDate);
-    return isNaN(d.getTime()) ? String(rawDate) : d.toLocaleDateString();
-  };
-
   const getFilteredOrders = () => {
-    return orders.filter((order) => {
+    const result = [];
+    const searchLower = search.toLowerCase();
+    const filterStatusLower = String(statusFilter).toLowerCase();
+
+    for (let i = 0; i < orders.length; i++) {
+      const order = orders[i];
+      if (!order) continue;
+
       const orderId = order.id ? String(order.id) : "";
       const customerName = order.customerName || order.customer_name || order.customer || "";
       const customerId = order.customer_id ? String(order.customer_id) : "";
 
       const matchesSearch =
-        orderId.toLowerCase().includes(search.toLowerCase()) ||
-        customerName.toLowerCase().includes(search.toLowerCase()) ||
-        customerId.toLowerCase().includes(search.toLowerCase());
+        orderId.toLowerCase().includes(searchLower) ||
+        customerName.toLowerCase().includes(searchLower) ||
+        customerId.toLowerCase().includes(searchLower);
+
+      if (!matchesSearch) continue;
 
       if (statusFilter === "All Statuses" || statusFilter === "Deleted") {
-        return matchesSearch;
+        result.push(order);
+        continue;
       }
 
-      return (
-        matchesSearch &&
-        String(order.status).toLowerCase() === String(statusFilter).toLowerCase()
-      );
+      const orderStatusLower = String(order.status || "").toLowerCase();
+
+      if (filterStatusLower === "completed") {
+        if (orderStatusLower === "completed" || orderStatusLower === "paid") {
+          result.push(order);
+        }
+      } else if (orderStatusLower === filterStatusLower) {
+        result.push(order);
+      }
+    }
+
+    result.sort((a, b) => {
+      const dateA = new Date(a.createdAt || a.created_at || a.order_date || a.date || 0).getTime();
+      const dateB = new Date(b.createdAt || b.created_at || b.order_date || b.date || 0).getTime();
+
+      if (dateA !== dateB) {
+        return dateA - dateB;
+      }
+      
+      const idA = Number(a.id || a._id) || 0;
+      const idB = Number(b.id || b._id) || 0;
+      return idA - idB;
     });
+
+    return result;
   };
 
   const filteredOrders = getFilteredOrders();
 
   const renderStatus = (status) => {
-    const currentStatus = status || "Pending";
-    const statusLower = String(currentStatus).toLowerCase();
+    const rawStatus = status || "Pending";
+    const statusLower = String(rawStatus).toLowerCase();
 
-    return (
-      <span
-        className={`status ${
-          statusLower === "completed"
-            ? "completed"
-            : statusLower === "pending"
-              ? "pending"
-              : statusLower === "shipped"
-                ? "shipped"
-                : "cancelled"
-        }`}
-      >
-        {currentStatus}
-      </span>
-    );
+    let displayStatus = rawStatus;
+    if (statusLower === "paid" || statusLower === "completed") {
+      displayStatus = "Completed";
+    } else if (statusLower === "processing") {
+      displayStatus = "Processing";
+    }
+
+    const statusClasses = {
+      completed: "completed",
+      paid: "completed",
+      pending: "pending",
+      processing: "processing",
+      shipped: "shipped",
+      cancelled: "cancelled",
+    };
+
+    const statusClass = statusClasses[statusLower] || "pending";
+
+    return <span className={`status ${statusClass}`}>{displayStatus}</span>;
   };
 
   const renderTableRows = () => {
-
     if (filteredOrders.length === 0) {
       return (
         <tr>
-          <td colSpan="7" className="text-center py-4">
+          <td colSpan="6" style={{ textAlign: "center", padding: "1.5rem 0" }}>
             No orders found.
           </td>
         </tr>
       );
     }
 
-    return filteredOrders.map((order, i) => {
-      const isCompleted = String(order.status).toLowerCase() === "completed";
+    const rows = [];
+    for (let i = 0; i < filteredOrders.length; i++) {
+      const order = filteredOrders[i];
+      if (!order) continue;
+
+      const statusLower = String(order.status || "").toLowerCase();
+      const isCompleted = statusLower === "completed" || statusLower === "paid";
       const isDeleted = statusFilter === "Deleted" || Number(order.is_deleted) === 1;
 
-      return (
+      rows.push(
         <tr
           key={order.id || order._id || i}
           onClick={() => handleRowClick(order.id || order._id)}
-          style={{ cursor: "pointer" }}
           className="clickable-row"
         >
-          <td className="text-primary fw-semibold">{i + 1}</td>
+          <td className="text-primary-styled">{i + 1}</td>
           <td>{order.customerName || order.customer_name || order.customer || "N/A"}</td>
           <td>{formatDate(order)}</td>
           <td>${parseAmount(order).toFixed(2)}</td>
@@ -183,8 +235,8 @@ const Orders = () => {
           <td>
             <div className="action-buttons">
               {!isDeleted && (
-                <button 
-                  className="btn-action-edit custom-tooltip me-2"
+                <button
+                  className="btn-action-edit custom-tooltip"
                   data-title={isCompleted ? "Unable to edit completed order" : "Edit Order"}
                   onClick={(e) => handleEdit(e, order)}
                   disabled={isCompleted}
@@ -201,12 +253,14 @@ const Orders = () => {
                   <i className="bi bi-trash-fill"></i> Delete
                 </button>
               )}
-              {isDeleted && <span className="badge bg-danger">Deleted</span>}
+              {isDeleted && <span className="badge-deleted">Deleted</span>}
             </div>
           </td>
         </tr>
       );
-    });
+    }
+
+    return rows;
   };
 
   return (
@@ -221,7 +275,7 @@ const Orders = () => {
             className="primary-btn"
             onClick={() => navigate("/orders/add")}
           >
-            <i className="bi bi-plus-lg me-1"></i>
+            <i className="bi bi-plus-lg"></i>
             Create Order
           </button>
         </div>
@@ -244,6 +298,7 @@ const Orders = () => {
           >
             <option value="All Statuses">All Statuses</option>
             <option value="Completed">Completed</option>
+            <option value="Processing">Processing</option>
             <option value="Pending">Pending</option>
             <option value="Shipped">Shipped</option>
             <option value="Cancelled">Cancelled</option>
@@ -252,22 +307,16 @@ const Orders = () => {
         </div>
 
         <div className="table-card">
-          <div
-            style={{
-              maxHeight: "350px",
-              overflowY: "auto",
-              overflowX: "auto",
-            }}
-          >
+          <div className="table-scroll-container">
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th className="tab-scroll">ORDER ID</th>
-                  <th className="tab-scroll">CUSTOMER NAME</th>
-                  <th className="tab-scroll">DATE</th>
-                  <th className="tab-scroll">AMOUNT</th>
-                  <th className="tab-scroll">STATUS</th>
-                  <th className="tab-scroll">ACTIONS</th>
+                  <th>ORDER ID</th>
+                  <th>CUSTOMER NAME</th>
+                  <th>DATE</th>
+                  <th>AMOUNT</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody>{renderTableRows()}</tbody>

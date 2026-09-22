@@ -1,38 +1,37 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import   { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { signupApi } from "../services/api";
-import "../styles/Login.css"; 
 
 const Signup = () => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Password Validation Function
+  const validatePass = (password) => {
+    const oneLc = /(?=.*[a-z])/.test(password);
+    const oneUpc = /(?=.*[A-Z])/.test(password);
+    const oneNum = /(?=.*\d)/.test(password);
+    const oneSpc = /(?=.*[@$!%*?&])/.test(password);
 
-  // const validatePass = (password)=>{
-  //   const oneLc =/(?=.*[a-z])/.test(password)
-  //   const oneUpc =/(?=.*[A-Z])/.test(password)
-  //   const oneNum = /(?=.*\d)/.test(password)
-  //   const oneSpc = /(?=.*[@$!%*?&])/.test(password)
+    if (password.length < 8) return "Password must be at least 8 characters long";
+    if (!oneLc) return "Add at least one lowercase letter";
+    if (!oneUpc) return "Add at least one uppercase letter";
+    if (!oneNum) return "Add at least one number";
+    if (!oneSpc) return "Add at least one special character (@$!%*?&)";
 
-  //   if (!oneLc) return "Add atleast one lowercase letter"  
-  //   if (!oneUpc) return "Add atleast one uppercase letter"  
-  //   if (!oneNum) return "Add atleast one number"  
-  //   if (!oneSpc) return "Add atleast one special character"  
-  //   if (password.lenght< 8) return "Password must be at least 8 characters long"  
-
-  //   return null;
-  // }
-  // const passErr = validatePass(formData.password)
-  // if (passErr) {
-  //   setError({password : passErr})
-  //   return
-  // }
-
+    return null;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    const passErr = validatePass(formData.password);
+    if (passErr) {
+      setError(passErr);
+      return;
+    }
+
     try {
       const res = await signupApi(formData);
       localStorage.setItem("token", res.data.token);

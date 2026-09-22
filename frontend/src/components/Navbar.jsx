@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import "../styles/Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
-
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -23,16 +23,12 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -41,100 +37,159 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    navigate("/login");
+    setUser(null);
+    setShowDropdown(false);
+    
+    // Smooth redirect to homepage
+    navigate("/homepage", { replace: true });
   };
 
   const navLinkClass = ({ isActive }) =>
-    `navbar-link ${isActive ? "active" : ""}`;
+    `velure-nav-item ${isActive ? "active" : ""}`;
+
+  const isUserRole = !user || user?.role === "user";
 
   return (
-    <nav className="admin-navbar">
-      <div className="navbar-left">
-
+    <header className="velure-header">
+      <nav className="velure-navbar">
+        {/* Brand Logo Left */}
         <div
-          className="navbar-logo"
-          onClick={() => navigate("/dashboard")}
+          className="velure-logo"
+          onClick={() =>
+            navigate(user?.role === "admin" ? "/dashboard" : "/homepage")
+          }
         >
-          <div className="logo-icon">
-            <i className="bi bi-bag-fill"></i>
-          </div>
-
-          <span>LOGO</span>
+          velure
         </div>
 
-        <div className="navbar-links">
 
-          <NavLink to="/dashboard" className={navLinkClass}>
-            <i className="bi bi-grid-fill"></i>
-            <span>Dashboard</span>
-          </NavLink>
+        <div className="velure-nav-pill">
+          {isUserRole ? (
+            <>
 
-          <NavLink to="/orders" className={navLinkClass}>
-            <i className="bi bi-bag-fill"></i>
-            <span>Orders</span>
-          </NavLink>
+              <NavLink to="/homepage" className={navLinkClass}>
+                <span className="dot"></span> Home
+              </NavLink>
 
-          <NavLink to="/customers" className={navLinkClass}>
-            <i className="bi bi-people-fill"></i>
-            <span>Customers</span>
-          </NavLink>
+        
+              <NavLink to="/market" className={navLinkClass}>
+                <span className="dot"></span> Market
+              </NavLink>
+              <NavLink to="/contactus" className={navLinkClass}>
+                <span className="dot"></span> Contact Us
+              </NavLink>
+              <NavLink to="/aboutus" className={navLinkClass}>
+                <span className="dot"></span> About Us
+              </NavLink>
+              <NavLink to="/blog" className={navLinkClass}>
+                <span className="dot"></span> Blog
+              </NavLink>
 
-          <NavLink to="/products" className={navLinkClass}>
-            <i className="bi bi-box-fill"></i>
-            <span>Products</span>
-          </NavLink>
+              {/* My Orders Link - Logged-in users only */}
+              {user && (
+                <NavLink to="/my-orders" className={navLinkClass}>
+                  <span className="dot"></span> My Orders
+                </NavLink>
+              )}
+            </>
+          ) : (
+            <>
+              <NavLink to="/dashboard" className={navLinkClass}>
+                <span className="dot"></span> Dashboard
+              </NavLink>
 
+              <NavLink to="/orders" className={navLinkClass}>
+                <span className="dot"></span> Orders
+              </NavLink>
+
+              <NavLink to="/customers" className={navLinkClass}>
+                <span className="dot"></span> Customers
+              </NavLink>
+
+              <NavLink to="/products" className={navLinkClass}>
+                <span className="dot"></span> Products
+              </NavLink>
+
+              <NavLink to="/category" className={navLinkClass}>
+                <span className="dot"></span> Categories
+              </NavLink>
+            </>
+          )}
         </div>
-      </div>
 
-      <div className="admin-profile" ref={dropdownRef}>
+        <div className="velure-right-actions">
+          <button
+            className="icon-btn"
+            title="Cart"
+            onClick={() => navigate("/checkout")}
+          >
+            <i className="bi bi-bag"></i>
+          </button>
 
-        <button
-          className="admin-button"
-          onClick={() => setShowDropdown(!showDropdown)}
-        >
-          <i className="bi bi-person-circle"></i>
-
-          <span>{user?.name || "Admin"}</span>
-
-          <i
-            className={`bi ${
-              showDropdown
-                ? "bi-chevron-up"
-                : "bi-chevron-down"
-            }`}
-          ></i>
-        </button>
-
-        {showDropdown && (
-          <div className="admin-dropdown">
-
+          {/* Profile / Account Dropdown */}
+          <div className="velure-profile-wrapper" ref={dropdownRef}>
             <button
-              onClick={() => {
-                setShowDropdown(false);
-                navigate("/ChangeCredentials");
-              }}
+              className="velure-user-btn"
+              onClick={() => setShowDropdown(!showDropdown)}
             >
-              <i className="bi bi-gear"></i>
-              Settings
+              <span>{user ? user?.name || "Account" : "Login / Signup"}</span>
+              <i
+                className={`bi ${
+                  showDropdown ? "bi-chevron-up" : "bi-chevron-down"
+                }`}
+              ></i>
             </button>
 
-            <div className="dropdown-divider"></div>
+            {showDropdown && (
+              <div className="velure-dropdown-menu">
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate("/ChangeCredentials");
+                      }}
+                    >
+                      <i className="bi bi-gear me-2"></i>
+                      Settings
+                    </button>
 
-            <button
-              className="logout-btn"
-              onClick={handleLogout}
-            >
-              <i className="bi bi-box-arrow-right"></i>
-              Logout
-            </button>
+                    <div className="velure-dropdown-divider"></div>
 
+                    <button className="logout-btn" onClick={handleLogout}>
+                      <i className="bi bi-box-arrow-right me-2"></i>
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate("/login");
+                      }}
+                    >
+                      <i className="bi bi-box-arrow-in-right me-2"></i>
+                      Login
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        navigate("/signup");
+                      }}
+                    >
+                      <i className="bi bi-person-plus me-2"></i>
+                      Signup
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-        )}
-
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </header>
   );
 };
 

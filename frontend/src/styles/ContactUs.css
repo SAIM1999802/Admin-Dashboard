@@ -1,0 +1,371 @@
+:root {
+  --velure-bg:           #F5F0E6;
+  --velure-bg-soft:      #FBF8F2;
+  --velure-forest:       #0B3D2E;
+  --velure-forest-deep:  #062018;
+  --velure-forest-hover: #14503E;
+  --velure-sage:         #4A7C6F;
+  --velure-coral:        #FF6B35;
+  --velure-coral-hover:  #E85A2A;
+  --velure-peach:        #FFE8D6;
+  --velure-text-dark:    #2C3E3A;
+  --velure-text-soft:    #4A5B55;
+  --velure-text-muted:   #7A8B85;
+  --velure-border:       #E0D9CC;
+  --velure-card-bg:      #FFFFFF;
+  --velure-radius:       16px;
+
+  --grad-forest:  linear-gradient(135deg, #0B3D2E 0%, #062018 100%);
+  --grad-orange:  linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%);
+
+  --sh-sm: 0 2px 8px rgba(11, 61, 46, 0.06);
+  --sh-md: 0 8px 20px rgba(11, 61, 46, 0.1);
+  --sh-lg: 0 18px 40px rgba(11, 61, 46, 0.14);
+}
+
+.velure-contact-page {
+  background: linear-gradient(180deg, #FBF8F2 0%, #F5F0E6 100%);
+  min-height: 100vh;
+  color: var(--velure-text-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.velure-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.velure-breadcrumb {
+  padding-top: 28px;
+  font-size: 0.9rem;
+  color: var(--velure-text-muted);
+}
+
+.velure-breadcrumb a {
+  color: var(--velure-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.velure-breadcrumb a:hover { color: var(--velure-coral); }
+.velure-breadcrumb span { margin: 0 8px; }
+
+.velure-contact-hero { padding: 44px 0 36px; }
+
+.velure-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--velure-coral);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.velure-title {
+  font-family: "Georgia", serif;
+  font-size: 2.9rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, #0B3D2E 0%, #14503E 60%, #4A7C6F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 14px 0;
+  letter-spacing: -0.02em;
+}
+
+.velure-lead {
+  font-size: 1.1rem;
+  color: var(--velure-text-soft);
+  max-width: 620px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.velure-contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 40px;
+  margin-bottom: 64px;
+}
+
+.velure-contact-form {
+  background: var(--velure-card-bg);
+  padding: 40px;
+  border-radius: var(--velure-radius);
+  border: 1px solid var(--velure-border);
+  box-shadow: var(--sh-md);
+}
+
+.velure-contact-success {
+  background: linear-gradient(135deg, #DCEAE4, #C8DDD3);
+  color: #0B3D2E;
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin-bottom: 26px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid rgba(74, 124, 111, 0.25);
+}
+
+.velure-form-group { margin-bottom: 22px; }
+
+.velure-form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--velure-forest);
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+
+.velure-form-group input,
+.velure-form-group textarea {
+  width: 100%;
+  padding: 13px 16px;
+  font-size: 0.95rem;
+  border: 1px solid var(--velure-border);
+  border-radius: 10px;
+  background-color: #FBF8F2;
+  color: var(--velure-text-dark);
+  outline: none;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.velure-form-group input:focus,
+.velure-form-group textarea:focus {
+  border-color: var(--velure-sage);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(74, 124, 111, 0.12);
+}
+
+.velure-btn-submit {
+  width: 100%;
+  background: var(--grad-orange);
+  color: #FFFFFF;
+  border: none;
+  padding: 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3);
+  letter-spacing: 0.01em;
+}
+
+.velure-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 107, 53, 0.45);
+}
+
+.velure-contact-card {
+  background: var(--grad-forest);
+  color: #FFFFFF;
+  padding: 40px;
+  border-radius: var(--velure-radius);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--sh-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.velure-contact-card::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(255, 107, 53, 0.15), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.velure-contact-card h2 {
+  font-family: "Georgia", serif;
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 26px;
+  color: #FFFFFF;
+  position: relative;
+  z-index: 1;
+}
+
+.velure-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+.velure-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.velure-info-icon {
+  background: rgba(255, 232, 214, 0.12);
+  color: var(--velure-peach);
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 232, 214, 0.12);
+}
+
+.velure-info-item h4 {
+  margin: 0 0 3px 0;
+  font-size: 0.78rem;
+  color: rgba(255, 232, 214, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.velure-info-item p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #FFFFFF;
+  word-break: break-word;
+}
+
+.velure-card-divider {
+  border: none;
+  border-top: 1px solid rgba(245, 240, 230, 0.12);
+  margin: 30px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.velure-socials-wrapper h4 {
+  margin: 0 0 14px 0;
+  font-size: 0.78rem;
+  color: rgba(255, 232, 214, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+}
+
+.velure-socials {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.velure-socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(245, 240, 230, 0.1);
+  color: #FFFFFF;
+  text-decoration: none;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(245, 240, 230, 0.06);
+}
+
+.velure-socials a:hover {
+  background: var(--grad-orange);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(255, 107, 53, 0.35);
+  border-color: transparent;
+}
+
+.velure-map-section { margin-bottom: 64px; }
+
+.velure-map-frame {
+  height: 340px;
+  border-radius: var(--velure-radius);
+  overflow: hidden;
+  border: 1px solid var(--velure-border);
+  box-shadow: var(--sh-md);
+}
+
+.velure-map-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.velure-map-caption { margin-top: 14px; }
+
+.velure-map-caption h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--velure-forest);
+}
+
+.velure-map-caption p {
+  margin: 4px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--velure-text-muted);
+}
+
+.velure-faq-section { margin-bottom: 90px; }
+
+.velure-faq-header { margin-bottom: 28px; }
+
+.velure-faq-header h2 {
+  font-family: "Georgia", serif;
+  font-size: 2.1rem;
+  color: var(--velure-forest);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.velure-faq-list {
+  background: var(--velure-card-bg);
+  border-radius: var(--velure-radius);
+  border: 1px solid var(--velure-border);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+}
+
+.velure-faq-item {
+  border-bottom: 1px solid var(--velure-border);
+  padding: 22px 26px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.velure-faq-item:last-child { border-bottom: none; }
+.velure-faq-item:hover { background-color: #FBF8F2; }
+
+.velure-faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--velure-forest);
+}
+
+.velure-faq-icon {
+  font-size: 1.3rem;
+  color: var(--velure-coral);
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.velure-faq-answer {
+  margin: 14px 0 0 0;
+  font-size: 0.95rem;
+  color: var(--velure-text-soft);
+  line-height: 1.65;
+}
+
+@media (max-width: 868px) {
+  .velure-contact-layout { grid-template-columns: 1fr; }
+}

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { getOrderDetails } from "../services/api";
-import "../styles/OrderDetail.css";
+import "../styles/Orders.css";
 
 const OrderDetail = () => {
   const { id } = useParams();
@@ -15,11 +14,7 @@ const OrderDetail = () => {
       try {
         setLoading(true);
         const response = await getOrderDetails(id);
-
-        console.log("API Full Response:", response);
-
-        const resultData =
-          response?.data?.data || response?.data || response;
+        const resultData = response?.data?.data || response?.data || response;
         setOrder(resultData);
       } catch (error) {
         console.error("Error loading order detail:", error);
@@ -30,20 +25,20 @@ const OrderDetail = () => {
     fetchOrder();
   }, [id]);
 
-  const getStatusBadge = (status) => {
+  const getStatusBadgeClass = (status) => {
     const statusLower = (status || "pending").toLowerCase();
     switch (statusLower) {
       case "completed":
       case "delivered":
-        return "badge-status badge-success";
+        return "status completed";
       case "processing":
       case "shipped":
-        return "badge-status badge-info";
+        return "status shipped";
       case "cancelled":
       case "deleted":
-        return "badge-status badge-danger";
+        return "status cancelled";
       default:
-        return "badge-status badge-warning";
+        return "status pending";
     }
   };
 
@@ -77,30 +72,33 @@ const OrderDetail = () => {
 
   if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="d-flex justify-content-center align-items-center vh-100">
-          <div className="spinner-border text-primary" role="status"></div>
-          <span className="ms-3 fw-semibold">Loading order details...</span>
+      <div className="order-detail-wrapper">
+        <div className="text-center-wrapper">
+          <div className="spinner"></div>
+          <p className="text-muted-small" style={{ marginTop: "1rem" }}>
+            Loading order details...
+          </p>
         </div>
-      </>
+      </div>
     );
   }
 
   if (!order) {
     return (
-      <>
-        <Navbar />
-        <div className="container text-center py-5">
-          <h3 className="fw-bold text-secondary">Order Not Found</h3>
+      <div className="order-detail-wrapper">
+        <div className="text-center-wrapper">
+          <h3 style={{ fontFamily: "var(--font-serif)", color: "#145c52" }}>
+            Order Not Found
+          </h3>
           <button
-            className="btn btn-primary mt-3"
+            className="primary-btn"
+            style={{ marginTop: "1rem" }}
             onClick={() => navigate("/orders")}
           >
             Back to Orders List
           </button>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -110,22 +108,22 @@ const OrderDetail = () => {
   ).toFixed(2);
 
   const itemsList = Array.isArray(order.items) ? order.items : [];
+
   return (
     <div className="order-detail-wrapper">
-      <Navbar />
-
       <main className="order-detail-container">
-        <div className="detail-header-bar mb-3">
+        <div className="detail-header-bar">
           <button
-            className="btn-back-link btn btn-link text-decoration-none p-0"
+            className="btn-back-link"
             onClick={() => navigate("/orders")}
           >
-            <i className="bi bi-arrow-left me-2"></i> Back to Orders
+            <i className="bi bi-arrow-left"></i>
+            Back to Orders
           </button>
         </div>
 
         <div className="order-detail-card">
-          <div className="order-card-header d-flex justify-content-between align-items-start mb-4">
+          <div className="order-card-header">
             <div>
               <h1 className="order-title">
                 Order #{order.order_number || order.id || id}
@@ -135,13 +133,12 @@ const OrderDetail = () => {
               </span>
             </div>
 
-            <span className={getStatusBadge(order.status)}>
+            <span className={getStatusBadgeClass(order.status)}>
               {order.status ? order.status.toUpperCase() : "PENDING"}
             </span>
           </div>
 
-          <div className="detail-data-list mb-4">
-            
+          <div className="detail-data-list">
             <div className="detail-data-row">
               <span className="detail-label">Customer Name</span>
               <span className="detail-value">
@@ -169,22 +166,20 @@ const OrderDetail = () => {
 
             <div className="detail-data-row">
               <span className="detail-label">Total Amount</span>
-              <span className="detail-value-price text-success fw-bold">
-                ${totalAmount}
-              </span>
+              <span className="detail-value-price">${totalAmount}</span>
             </div>
 
             <div className="detail-data-row">
               <span className="detail-label">Payment Method</span>
-              <span className="detail-value fw-semibold text-capitalize">
+              <span className="detail-value">
                 {order.payment_method || order.payment_status || "Paid"}
               </span>
             </div>
           </div>
 
-          <div className="order-section-box mb-4">
-            <h3 className="section-title fw-bold">Shipping Address</h3>
-            <p className="section-text text-muted mb-0">
+          <div className="customer-address-box">
+            <h3 className="address-title">Shipping Address</h3>
+            <p className="address-text">
               {order.shipping_address ||
                 order.shippingAddress ||
                 order.address ||
@@ -192,104 +187,89 @@ const OrderDetail = () => {
             </p>
           </div>
 
-          <div className="order-section-box">
-            <h3 className="section-title fw-bold mb-3">Order Items</h3>
+          <div className="order-items-section">
+            <h3 className="section-subtitle">Order Items</h3>
             {itemsList.length > 0 ? (
-              <div className="table-responsive">
-                <table className="table table-bordered align-middle mb-0">
-                  <thead className="table-light">
-                    <tr>
-                      <th style={{ width: "80px" }}>Picture</th>
-                      <th>Product Details</th>
-                      <th className="text-center" style={{ width: "120px" }}>
-                        Quantity
-                      </th>
-                      <th className="text-end" style={{ width: "130px" }}>
-                        Unit Price
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {itemsList.map((item, index) => {
-                      const qty = Number(item.quantity || 1);
-                      const price = Number(item.price || 0);
-                      const productName =
-                        item.product_name ||
-                        item.name ||
-                        `Product #${item.product_id}`;
-                      const imageUrl =
-                        item.image_url || item.image || item.picture;
-                      const description =
-                        item.description || item.product_description || "";
+              <div className="table-card">
+                <div className="table-scroll-container">
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: "90px" }}>PICTURE</th>
+                        <th>PRODUCT DETAILS</th>
+                        <th style={{ width: "120px", textAlign: "center" }}>
+                          QUANTITY
+                        </th>
+                        <th style={{ width: "130px", textAlign: "right" }}>
+                          UNIT PRICE
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {itemsList.map((item, index) => {
+                        const qty = Number(item.quantity || 1);
+                        const price = Number(item.price || 0);
+                        const productName =
+                          item.product_name ||
+                          item.name ||
+                          `Product #${item.product_id}`;
+                        const imageUrl =
+                          item.image_url || item.image || item.picture;
+                        const description =
+                          item.description || item.product_description || "";
 
-                      return (
-                        <tr
-                          key={index}
-                          onClick={() => handleProductClick(item)}
-                          style={{ cursor: "pointer" }}
-                          className="clickable-row"
-                        >
-                          <td className="text-center">
-                            {imageUrl ? (
-                              <img
-                                src={imageUrl}
-                                alt={productName}
-                                className="img-thumbnail"
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            ) : (
-                              <div
-                                className="bg-light text-secondary rounded d-flex align-items-center justify-content-center mx-auto"
-                                style={{
-                                  width: "50px",
-                                  height: "50px",
-                                  fontSize: "12px",
-                                }}
-                              >
-                                No Image
-                              </div>
-                            )}
-                          </td>
+                        return (
+                          <tr
+                            key={index}
+                            onClick={() => handleProductClick(item)}
+                            className="clickable-row"
+                          >
+                            <td style={{ textAlign: "center" }}>
+                              {imageUrl ? (
+                                <img
+                                  src={imageUrl}
+                                  alt={productName}
+                                  className="item-img"
+                                />
+                              ) : (
+                                <div className="item-img-placeholder">
+                                  No Image
+                                </div>
+                              )}
+                            </td>
 
-                          <td>
-                            <div className="fw-semibold text-primary">
-                              {productName}
-                            </div>
-                            {description && (
-                              <small className="text-muted d-block mt-1">
-                                {description}
-                              </small>
-                            )}
-                          </td>
+                            <td>
+                              <div className="item-title">{productName}</div>
+                              {description && (
+                                <div className="text-muted-small">
+                                  {description}
+                                </div>
+                              )}
+                            </td>
 
-                          <td className="text-center">
-                            <span className="badge bg-secondary fs-6">
-                              {qty}
-                            </span>
-                          </td>
+                            <td style={{ textAlign: "center" }}>
+                              <span className="status completed">{qty}</span>
+                            </td>
 
-                          <td className="text-end fw-bold">
-                            ${price.toFixed(2)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                            <td style={{ textAlign: "right", fontWeight: "700" }}>
+                              ${price.toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
-              <p className="text-muted italic mb-0">
+              <p className="text-muted-small">
                 No item details available for this order.
               </p>
             )}
 
-            <div className="d-flex justify-content-end mt-3">
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem" }}>
               <button
-                className="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 fw-semibold"
+                className="primary-btn"
                 onClick={() => navigate(`/orders/edit/${id}`)}
               >
                 <i className="bi bi-pencil-square"></i> Edit Items

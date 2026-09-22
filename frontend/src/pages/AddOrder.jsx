@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { getProducts, getCustomers, addOrder } from "../services/api";
 import "../styles/Orders.css";
 
@@ -8,19 +7,42 @@ const CreateOrder = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [customerName, setCustomerName] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
-  const [shippingAddress, setShippingAddress] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("Card (Stripe)");
+  const getInitialDraft = () => {
+    try {
+      const saved = sessionStorage.getItem("createOrderDraft");
+      return saved ? JSON.parse(saved) : null;
+    } catch (err) {
+      console.error("Failed to parse draft from sessionStorage:", err);
+      return null;
+    }
+  };
+
+  const initialDraft = getInitialDraft();
+
+  const [customerName, setCustomerName] = useState(
+    initialDraft?.customerName || ""
+  );
+  const [customerEmail, setCustomerEmail] = useState(
+    initialDraft?.customerEmail || ""
+  );
+  const [shippingAddress, setShippingAddress] = useState(
+    initialDraft?.shippingAddress || ""
+  );
+  const [paymentMethod, setPaymentMethod] = useState(
+    initialDraft?.paymentMethod || "Card (Stripe)"
+  );
+  const [selectedCustomer, setSelectedCustomer] = useState(
+    initialDraft?.selectedCustomer || null
+  );
+  const [selectedItems, setSelectedItems] = useState(
+    initialDraft?.selectedItems || []
+  );
 
   const [customersList, setCustomersList] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-
   const [availableProducts, setAvailableProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState("");
-  const [selectedItems, setSelectedItems] = useState([]);
 
   const dropdownRef = useRef(null);
 
@@ -31,13 +53,11 @@ const CreateOrder = () => {
           getProducts().catch(() => ({ data: [] })),
           getCustomers().catch(() => ({ data: [] })),
         ]);
-
-        // Fix 1: Properly extract array from nested API responses (EditOrder reference)
         const rawProducts = prodRes.data?.data || prodRes.data || prodRes || [];
         setAvailableProducts(
           Array.isArray(rawProducts)
             ? rawProducts.filter((p) => !p.is_deleted)
-            : [],
+            : []
         );
 
         const custs = custRes.data?.data || custRes.data || custRes || [];
@@ -68,6 +88,25 @@ const CreateOrder = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const draft = {
+      customerName,
+      customerEmail,
+      shippingAddress,
+      paymentMethod,
+      selectedCustomer,
+      selectedItems,
+    };
+    sessionStorage.setItem("createOrderDraft", JSON.stringify(draft));
+  }, [
+    customerName,
+    customerEmail,
+    shippingAddress,
+    paymentMethod,
+    selectedCustomer,
+    selectedItems,
+  ]);
+
   const handleCustomerNameChange = (e) => {
     const value = e.target.value;
     setCustomerName(value);
@@ -75,19 +114,19 @@ const CreateOrder = () => {
 
     if (value.trim() !== "") {
       const filtered = customersList.filter((c) =>
-        c.name?.toLowerCase().includes(value.toLowerCase()),
+        c.name?.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredCustomers(filtered);
       setShowDropdown(true);
 
       const matchedCustomer = customersList.find(
-        (c) => c.name?.toLowerCase() === value.toLowerCase(),
+        (c) => c.name?.toLowerCase() === value.toLowerCase()
       );
 
       if (matchedCustomer) {
         setCustomerEmail(matchedCustomer.email || "");
         setShippingAddress(
-          matchedCustomer.address || matchedCustomer.shippingAddress || "",
+          matchedCustomer.address || matchedCustomer.shippingAddress || ""
         );
         setSelectedCustomer(matchedCustomer);
       } else {
@@ -111,12 +150,11 @@ const CreateOrder = () => {
     setShowDropdown(false);
   };
 
-  // Fix 2: Updated handleAddProduct logic & state immutability
-  const handleAddProduct = () => {
-    if (!selectedProductId) return;
+  const handleProductSelect = (productId) => {
+    if (!productId) return;
 
     const productObj = availableProducts.find(
-      (p) => String(p.id) === String(selectedProductId),
+      (p) => String(p.id) === String(productId)
     );
 
     if (!productObj || productObj.is_deleted === 1) {
@@ -125,7 +163,7 @@ const CreateOrder = () => {
     }
 
     const availableStock = Number(
-      productObj.stock_count ?? productObj.stock ?? 0,
+      productObj.stock_count ?? productObj.stock ?? 0
     );
 
     if (availableStock <= 0) {
@@ -134,7 +172,7 @@ const CreateOrder = () => {
     }
 
     const existingIndex = selectedItems.findIndex(
-      (item) => String(item.id) === String(selectedProductId),
+      (item) => String(item.id) === String(productId)
     );
 
     if (existingIndex > -1) {
@@ -147,8 +185,8 @@ const CreateOrder = () => {
         prevItems.map((item, idx) =>
           idx === existingIndex
             ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        ),
+            : item
+        )
       );
     } else {
       setSelectedItems((prev) => [
@@ -183,17 +221,16 @@ const CreateOrder = () => {
           }
           return item;
         })
-        .filter(Boolean),
+        .filter(Boolean)
     );
   };
 
   const handleManualQuantityChange = (id, value, stock) => {
-    // Field clear (backspace) hone par temporarily 0 rehne dein
     if (value === "") {
       setSelectedItems((prevItems) =>
         prevItems.map((item) =>
-          String(item.id) === String(id) ? { ...item, quantity: 0 } : item,
-        ),
+          String(item.id) === String(id) ? { ...item, quantity: 0 } : item
+        )
       );
       return;
     }
@@ -210,8 +247,8 @@ const CreateOrder = () => {
 
     setSelectedItems((prevItems) =>
       prevItems.map((item) =>
-        String(item.id) === String(id) ? { ...item, quantity: newQty } : item,
-      ),
+        String(item.id) === String(id) ? { ...item, quantity: newQty } : item
+      )
     );
   };
 
@@ -220,21 +257,21 @@ const CreateOrder = () => {
       prevItems.map((item) =>
         String(item.id) === String(id) && item.quantity === 0
           ? { ...item, quantity: 1 }
-          : item,
-      ),
+          : item
+      )
     );
   };
 
   const handleRemoveItem = (id) => {
     setSelectedItems((prev) =>
-      prev.filter((item) => String(item.id) !== String(id)),
+      prev.filter((item) => String(item.id) !== String(id))
     );
   };
 
   const grandTotal = Number(
     selectedItems
       .reduce((acc, item) => acc + item.price * item.quantity, 0)
-      .toFixed(2),
+      .toFixed(2)
   );
 
   const handleSubmit = async (e) => {
@@ -250,7 +287,6 @@ const CreateOrder = () => {
       return;
     }
 
-    // Fix 3: Standardizing items array payload sent to backend
     const orderData = {
       customerId: selectedCustomer.id,
       customerName,
@@ -267,8 +303,14 @@ const CreateOrder = () => {
     };
 
     try {
-      await addOrder(orderData);
-      navigate("/orders");
+      const res = await addOrder(orderData);
+
+      if (paymentMethod === "Card (Stripe)" && res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      } else {
+        sessionStorage.removeItem("createOrderDraft");
+        navigate("/orders");
+      }
     } catch (error) {
       console.error("Error creating order:", error);
       alert(error.response?.data?.message || "Failed to create order");
@@ -279,20 +321,15 @@ const CreateOrder = () => {
 
   return (
     <>
-      <Navbar />
-      <main className="admin-page d-flex justify-content-center py-4">
-        <div
-          className="card p-4 shadow-sm border-0 rounded-4"
-          style={{ maxWidth: "650px", width: "100%", backgroundColor: "#fff" }}
-        >
-          <h2 className="fw-bold mb-4">Create Order</h2>
+
+      <main className="admin-page orders-page-container">
+        <div className="orders-form-card">
+          <h2 className="page-title">Create Order</h2>
 
           <form onSubmit={handleSubmit}>
-            <div className="mb-3 position-relative" ref={dropdownRef}>
-              <label className="form-label text-muted small fw-semibold">
-                Customer Name
-              </label>
-              <div className="input-group mb-1">
+            <div className="form-group" ref={dropdownRef}>
+              <label className="form-label">Customer Name</label>
+              <div className="input-group">
                 <input
                   type="text"
                   className="form-control"
@@ -311,38 +348,25 @@ const CreateOrder = () => {
                 />
                 <button
                   type="button"
-                  className="btn btn-sm btn-primary fw-semibold custom-tooltip"
+                  className="btn-primary custom-tooltip"
                   data-title="Add New Customer"
                   onClick={() => navigate("/customers/add")}
                 >
-                  <i className="bi bi-person-plus me-1"></i>Add New Customer
+                  <i className="bi bi-person-plus"></i> Add New Customer
                 </button>
               </div>
 
               {showDropdown && filteredCustomers.length > 0 && (
-                <ul
-                  className="list-group position-absolute w-100 shadow-sm mt-1 overflow-auto rounded-3"
-                  style={{
-                    maxHeight: "200px",
-                    zIndex: 1000,
-                    backgroundColor: "#ffffff",
-                  }}
-                >
+                <ul className="dropdown-menu-custom">
                   {filteredCustomers.map((cust, idx) => (
                     <li
                       key={cust.id || idx}
-                      className="list-group-item list-group-item-action border-0 px-3 py-2"
-                      style={{ cursor: "pointer" }}
+                      className="dropdown-item-custom"
                       onClick={() => handleSelectCustomer(cust)}
                     >
-                      <div className="fw-medium text-dark">{cust.name}</div>
+                      <div className="dropdown-item-name">{cust.name}</div>
                       {cust.email && (
-                        <div
-                          className="text-muted extra-small"
-                          style={{ fontSize: "0.8rem" }}
-                        >
-                          {cust.email}
-                        </div>
+                        <div className="dropdown-item-email">{cust.email}</div>
                       )}
                     </li>
                   ))}
@@ -352,19 +376,17 @@ const CreateOrder = () => {
               {customerName.trim() !== "" &&
                 !selectedCustomer &&
                 filteredCustomers.length === 0 && (
-                  <div className="mt-2 text-muted small d-flex align-items-center justify-content-between">
-                    <span>Customer not found in records.</span>
+                  <div className="text-muted-small" style={{ marginTop: "0.5rem" }}>
+                    Customer not found in records.
                   </div>
                 )}
             </div>
 
             {selectedCustomer && (
-              <div className="mb-3">
-                <label className="form-label text-muted small fw-semibold">
-                  Shipping address
-                </label>
+              <div className="form-group">
+                <label className="form-label">Shipping address</label>
                 <textarea
-                  className="form-control"
+                  className="form-textarea"
                   rows="3"
                   value={shippingAddress}
                   onChange={(e) => setShippingAddress(e.target.value)}
@@ -373,97 +395,62 @@ const CreateOrder = () => {
               </div>
             )}
 
-            <div className="mb-4">
-              <label className="form-label text-muted small fw-semibold">
-                Add product
-              </label>
-              <div className="d-flex gap-2">
-                <select
-                  className="form-select"
-                  value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
-                >
-                  <option value="">Select a product</option>
-                  {availableProducts.map((prod) => {
-                    const currentStock = Number(
-                      prod.stock_count ?? prod.stock ?? 0,
-                    );
-                    const isOutOfStock = currentStock <= 0;
-                    return (
-                      <option
-                        key={prod.id}
-                        value={prod.id}
-                        disabled={isOutOfStock}
-                      >
-                        {prod.name} - ${parseFloat(prod.price || 0).toFixed(2)}{" "}
-                        {isOutOfStock
-                          ? "(Out of Stock)"
-                          : `(Stock: ${currentStock})`}
-                      </option>
-                    );
-                  })}
-                </select>
-                <button
-                  type="button"
-                  className="btn btn-secondary text-white px-4 fw-semibold"
-                  onClick={handleAddProduct}
-                  disabled={!selectedProductId}
-                >
-                  Add
-                </button>
-              </div>
+            <div className="form-group-lg">
+              <label className="form-label">Add product</label>
+              <select
+                className="form-select"
+                value={selectedProductId}
+                onChange={(e) => handleProductSelect(e.target.value)}
+              >
+                <option value="">Select a product</option>
+                {availableProducts.map((prod) => {
+                  const currentStock = Number(
+                    prod.stock_count ?? prod.stock ?? 0
+                  );
+                  const isOutOfStock = currentStock <= 0;
+                  return (
+                    <option
+                      key={prod.id}
+                      value={prod.id}
+                      disabled={isOutOfStock}
+                    >
+                      {prod.name} - ${parseFloat(prod.price || 0).toFixed(2)}{" "}
+                      {isOutOfStock
+                        ? "(Out of Stock)"
+                        : `(Stock: ${currentStock})`}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
             {selectedItems.length > 0 && (
-              <div className="border rounded-3 p-3 mb-4 bg-light-subtle">
+              <div className="items-summary-box">
                 {selectedItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="d-flex align-items-center justify-content-between py-2 border-bottom gap-2"
-                  >
-                    <div
-                      className="d-flex align-items-center gap-2 overflow-hidden flex-shrink-1 me-2"
-                      style={{ minWidth: 0 }}
-                    >
+                  <div key={item.id} className="item-row">
+                    <div className="item-info">
                       {item.image ? (
                         <img
                           src={item.image}
                           alt={item.name}
-                          style={{
-                            width: "40px",
-                            height: "40px",
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                            flexShrink: 0,
-                          }}
+                          className="item-img"
                         />
                       ) : (
-                        <div
-                          className="bg-secondary-subtle rounded flex-shrink-0"
-                          style={{ width: "40px", height: "40px" }}
-                        />
+                        <div className="item-img-placeholder" />
                       )}
-                      <div className="text-truncate">
-                        <div className="fw-bold text-dark text-truncate small">
-                          {item.name}
-                        </div>
-                        <div
-                          className="text-muted extra-small"
-                          style={{ fontSize: "0.75rem" }}
-                        >
+                      <div className="item-details">
+                        <div className="item-title">{item.name}</div>
+                        <div className="item-subtext">
                           ${item.price.toFixed(2)} each
                         </div>
                       </div>
                     </div>
 
-                    <div className="d-flex align-items-center gap-2 item-qty-wrapper flex-shrink-0">
-                      <div
-                        className="input-group input-group-sm flex-nowrap"
-                        style={{ width: "100px" }}
-                      >
+                    <div className="item-qty-wrapper">
+                      <div className="qty-counter-group">
                         <button
                           type="button"
-                          className="btn btn-outline-danger px-2"
+                          className="btn-minus"
                           onClick={() => handleQuantityChange(item.id, -1)}
                         >
                           -
@@ -474,27 +461,30 @@ const CreateOrder = () => {
                           max={item.stock}
                           value={item.quantity === 0 ? "" : item.quantity}
                           placeholder="0"
-                          className="form-control text-center px-1"
                           onChange={(e) =>
                             handleManualQuantityChange(
                               item.id,
                               e.target.value,
-                              item.stock,
+                              item.stock
                             )
                           }
                           onBlur={() => handleQuantityBlur(item.id)}
                         />
+                        <button
+                          type="button"
+                          className="btn-plus"
+                          onClick={() => handleQuantityChange(item.id, 1)}
+                        >
+                          +
+                        </button>
                       </div>
-                      <span
-                        className="fw-bold text-end small"
-                        style={{ minWidth: "60px", whiteSpace: "nowrap" }}
-                      >
+                      <span className="item-total-price">
                         ${(item.price * item.quantity).toFixed(2)}
                       </span>
 
                       <button
                         type="button"
-                        className="btn btn-link text-danger p-0 ms-1"
+                        className="btn-icon-danger"
                         onClick={() => handleRemoveItem(item.id)}
                       >
                         <i className="bi bi-trash"></i>
@@ -503,19 +493,21 @@ const CreateOrder = () => {
                   </div>
                 ))}
 
-                <div className="d-flex justify-content-between align-items-center pt-3 fw-bold fs-5">
+                <div className="order-grand-total">
                   <span>Total</span>
                   <span>${grandTotal.toFixed(2)}</span>
                 </div>
               </div>
             )}
 
-            <div className="mb-4">
-              <label className="form-label text-muted small fw-semibold">
-                Payment method
-              </label>
-              <div className="d-flex gap-3">
-                <label className="border rounded p-3 flex-fill d-flex align-items-center gap-2 cursor-pointer">
+            <div className="form-group-lg">
+              <label className="form-label">Payment method</label>
+              <div className="radio-group-grid">
+                <label
+                  className={`radio-card ${
+                    paymentMethod === "Cash on Delivery" ? "active" : ""
+                  }`}
+                >
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -525,7 +517,11 @@ const CreateOrder = () => {
                   />
                   Cash on Delivery
                 </label>
-                <label className="border rounded p-3 flex-fill d-flex align-items-center gap-2 cursor-pointer">
+                <label
+                  className={`radio-card ${
+                    paymentMethod === "Card (Stripe)" ? "active" : ""
+                  }`}
+                >
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -538,18 +534,21 @@ const CreateOrder = () => {
               </div>
             </div>
 
-            <div className="d-flex gap-3">
+            <div className="button-row">
               <button
                 type="button"
-                className="btn btn-light flex-fill py-2 fw-semibold"
-                onClick={() => navigate("/orders")}
+                className="btn-light"
+                onClick={() => {
+                  sessionStorage.removeItem("createOrderDraft");
+                  navigate("/orders");
+                }}
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                className="btn btn-success flex-fill py-2 fw-semibold"
+                className="btn-success"
                 disabled={!isFormValid}
               >
                 Continue to Payment

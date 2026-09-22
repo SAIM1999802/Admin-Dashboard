@@ -1,63 +1,82 @@
 const db = require("../config/db");
 
-const getAllProducts = async (userId) => {
+const getAllProducts = async () => {
   const [rows] = await db.query(
-    "SELECT id, name, category, price, stock_count AS stock, image, description FROM products WHERE is_deleted = 0 AND user_id = ?",
-    [userId]
+    `SELECT 
+      p.id, 
+      p.name, 
+      p.category_id, 
+      c.Name AS category, 
+      p.price, 
+      p.stock_count AS stock, 
+      p.image, 
+      p.description 
+     FROM products p 
+     LEFT JOIN categories c ON p.category_id = c.id AND c.is_deleted = 0
+     WHERE p.is_deleted = 0 
+     ORDER BY p.id ASC`
   );
   return rows;
 };
-
-const getProductById = async (id, userId) => {
+const getProductById = async (id) => {
   const [rows] = await db.query(
-    "SELECT id, name, category, price, stock_count AS stock, image, description FROM products WHERE id = ? AND user_id = ? AND is_deleted = 0",
-    [id, userId]
+    `SELECT 
+      p.id, 
+      p.name, 
+      p.category_id, 
+      c.Name AS category, 
+      p.price, 
+      p.stock_count AS stock, 
+      p.image, 
+      p.description 
+     FROM products p
+     LEFT JOIN categories c ON p.category_id = c.id AND c.is_deleted = 0
+     WHERE p.id = ? AND p.is_deleted = 0`,
+    [id]
   );
-  return rows[0];
+  return rows[0] || null;
 };
 
 const createProduct = async (data, userId) => {
-  const { name, category, price, stock, image, images, description } = data;
-  const mainImage = (Array.isArray(images) && images.length > 0) ? images[0] : (image || null);
-
+  const { name, category_id, price, stock, image, description } = data;
   const cleanDescription = description != null ? String(description).trim() : "";
+  const finalStock = parseInt(stock, 10) || 0;
 
   const query = `
-    INSERT INTO products (name, category, price, stock_count, image, description, is_deleted, user_id) 
+    INSERT INTO products (name, category_id, price, stock_count, image, description, is_deleted, user_id) 
     VALUES (?, ?, ?, ?, ?, ?, 0, ?)
   `;
 
   const [result] = await db.query(query, [
     name || "Untitled Product",
-    category || "Electronics",
+    category_id || null,
     parseFloat(price) || 0.00,
-    parseInt(stock, 10) || 0,
-    mainImage,
+    finalStock,
+    image || null,
     cleanDescription,
     userId
   ]);
 
-  return result;
+  return { id: result.insertId, ...data };
 };
 
 const updateProduct = async (id, data, userId) => {
-  const { name, category, price, stock, image, images, description } = data;
-  const mainImage = (Array.isArray(images) && images.length > 0) ? images[0] : (image || null);
-
+  const { name, category_id, price, stock, image, description } = data;
   const cleanDescription = description != null ? String(description).trim() : "";
+  const finalStock = parseInt(stock, 10) || 0;
 
   const query = `
     UPDATE products 
-    SET name = ?, category = ?, price = ?, stock_count = ?, image = ?, description = ? 
+    SET name = ?, category_id = ?, price = ?, stock_count = ?, image = ?, description = ? 
     WHERE id = ? AND user_id = ? AND is_deleted = 0
   `;
 
   const [result] = await db.query(query, [
     name || "Untitled Product",
-    category || "Electronics",
+    category_id || null,
     parseFloat(price) || 0.00,
-    parseInt(stock, 10) || 0,
-    mainImage,
+    finalStock,
+    image || null,
     cleanDescription,
     parseInt(id, 10),
     userId
