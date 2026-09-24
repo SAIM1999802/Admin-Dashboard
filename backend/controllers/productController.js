@@ -36,11 +36,12 @@ exports.getProductDetails = async (req, res) => {
 exports.addProduct = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, category_id, price, stock, stock_count, image, description } = req.body;
+    const { name, category_id, stock_price, price, stock, stock_count, image, description } = req.body;
 
     const productData = {
       name,
       category_id,
+      stock_price, // Fixed: Added stock_price to payload
       price,
       stock: stock !== undefined ? stock : stock_count,
       image,
@@ -59,11 +60,12 @@ exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    const { name, category_id, price, stock, stock_count, image, description } = req.body;
+    const { name, category_id, stock_price, price, stock, stock_count, image, description } = req.body; // Fixed: Destructured stock_price
 
     const productData = {
       name,
       category_id,
+      stock_price, // Fixed: Added stock_price to payload
       price,
       stock: stock !== undefined ? stock : stock_count,
       image,

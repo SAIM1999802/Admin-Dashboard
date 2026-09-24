@@ -109,28 +109,10 @@ function App() {
         />
         <Route
           path="/contactus"
-          element={
-            <ContactUs
-              allowedRoles={["user"]}
-            />
-          }
+          element={<ContactUs allowedRoles={["user"]} />}
         />
-        <Route
-          path="/aboutus"
-          element={
-            <AboutUs
-              allowedRoles={["user"]}
-            />
-          }
-        />
-        <Route
-          path="/blog"
-          element={
-            <Blog
-              allowedRoles={["user"]}
-            />
-          }
-        />
+        <Route path="/aboutus" element={<AboutUs allowedRoles={["user"]} />} />
+        <Route path="/blog" element={<Blog allowedRoles={["user"]} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 

@@ -7,6 +7,7 @@ const getAllProducts = async () => {
       p.name, 
       p.category_id, 
       c.Name AS category, 
+      p.stock_price,
       p.price, 
       p.stock_count AS stock, 
       p.image, 
@@ -25,6 +26,7 @@ const getProductById = async (id) => {
       p.name, 
       p.category_id, 
       c.Name AS category, 
+      p.stock_price, 
       p.price, 
       p.stock_count AS stock, 
       p.image, 
@@ -38,18 +40,19 @@ const getProductById = async (id) => {
 };
 
 const createProduct = async (data, userId) => {
-  const { name, category_id, price, stock, image, description } = data;
+  const { name, category_id, stock_price ,price, stock, image, description } = data;
   const cleanDescription = description != null ? String(description).trim() : "";
   const finalStock = parseInt(stock, 10) || 0;
 
   const query = `
-    INSERT INTO products (name, category_id, price, stock_count, image, description, is_deleted, user_id) 
-    VALUES (?, ?, ?, ?, ?, ?, 0, ?)
+    INSERT INTO products (name, category_id,stock_price , price, stock_count, image, description, is_deleted, user_id) 
+    VALUES (?, ?, ? , ? , ?, ?, ?, 0, ?)
   `;
 
   const [result] = await db.query(query, [
     name || "Untitled Product",
     category_id || null,
+    parseFloat(stock_price) || 0.00,
     parseFloat(price) || 0.00,
     finalStock,
     image || null,
@@ -61,19 +64,20 @@ const createProduct = async (data, userId) => {
 };
 
 const updateProduct = async (id, data, userId) => {
-  const { name, category_id, price, stock, image, description } = data;
+  const { name, category_id, stock_price, price, stock, image, description } = data;
   const cleanDescription = description != null ? String(description).trim() : "";
   const finalStock = parseInt(stock, 10) || 0;
 
   const query = `
     UPDATE products 
-    SET name = ?, category_id = ?, price = ?, stock_count = ?, image = ?, description = ? 
+    SET name = ?, category_id = ?, stock_price = ? , price = ?, stock_count = ?, image = ?, description = ? 
     WHERE id = ? AND user_id = ? AND is_deleted = 0
   `;
 
   const [result] = await db.query(query, [
     name || "Untitled Product",
     category_id || null,
+    parseFloat(stock_price) || 0.00,
     parseFloat(price) || 0.00,
     finalStock,
     image || null,

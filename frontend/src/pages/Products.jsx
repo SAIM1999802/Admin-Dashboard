@@ -95,6 +95,7 @@ const Products = () => {
             </div>
           </td>
           <td>{item.category}</td>
+          <td>${item.stock_price}</td>
           <td>${item.price}</td>
           <td>{item.stock}</td>
           <td>{getStatus(item.stock)}</td>
@@ -169,10 +170,11 @@ const Products = () => {
                   <th>ID</th>
                   <th>PRODUCT</th>
                   <th>CATEGORY</th>
-                  <th>PRICE</th>
+                  <th>STOCK PRICE</th>
+                  <th>SELLING PRICE</th>
                   <th>STOCK</th>
                   <th>STATUS</th>
-                  <th style={{ textAlign: "right" }}>ACTIONS</th>
+                  <th style={{ textAlign: "center" }}>ACTIONS</th>
                 </tr>
               </thead>
               <tbody>{renderProductRows()}</tbody>

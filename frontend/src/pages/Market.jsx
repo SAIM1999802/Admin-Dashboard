@@ -16,6 +16,10 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // 🔹 PAGINATION STATES
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12; // Ek page par kitne products dikhane hain
+
   // Cart Drawer & Toast State
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -129,7 +133,23 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
     });
 
     setFilteredProducts(result);
+    // Search ya Category change hote hi Page 1 par reset kar dein
+    setCurrentPage(1);
   }, [searchTerm, selectedCategory, products]);
+
+  // 🔹 PAGINATION COMPUTATIONS
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const indexOfLastProduct = currentPage * itemsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const triggerToast = (msg, type = "success") => {
     setToastMessage(msg);
@@ -249,66 +269,107 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
             <p>Loading products...</p>
           </div>
         ) : filteredProducts.length > 0 ? (
-          <div className="products-grid">
-            {filteredProducts.map((product) => {
-              const stock = Number(product.stock ?? 0);
-              const isOutOfStock = stock <= 0;
+          <>
+            <div className="products-grid">
+              {currentProducts.map((product) => {
+                const stock = Number(product.stock ?? 0);
+                const isOutOfStock = stock <= 0;
 
-              return (
-                <div
-                  key={product.id}
-                  className="velure-card"
-                  onClick={() => navigate(`/products/detail/${product.id}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <div className="velure-card-img-wrapper">
-                    <img
-                      src={
-                        product.image ||
-                        "https://via.placeholder.com/300x200?text=No+Image"
-                      }
-                      alt={product.name}
-                      className="velure-card-img"
-                    />
-                    {product.category && (
-                      <span className="category-badge">{product.category}</span>
-                    )}
+                return (
+                  <div
+                    key={product.id}
+                    className="velure-card"
+                    onClick={() => navigate(`/products/detail/${product.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <div className="velure-card-img-wrapper">
+                      <img
+                        src={
+                          product.image ||
+                          "https://via.placeholder.com/300x200?text=No+Image"
+                        }
+                        alt={product.name}
+                        className="velure-card-img"
+                      />
+                      {product.category && (
+                        <span className="category-badge">
+                          {product.category}
+                        </span>
+                      )}
 
-                    {isOutOfStock && (
-                      <div className="out-of-stock-overlay">
-                        <span className="stock-badge">Out of Stock</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="velure-card-body">
-                    <div>
-                      <h3 className="product-title">{product.name}</h3>
-                      {product.description && (
-                        <p className="product-desc">{product.description}</p>
+                      {isOutOfStock && (
+                        <div className="out-of-stock-overlay">
+                          <span className="stock-badge">Out of Stock</span>
+                        </div>
                       )}
                     </div>
 
-                    <div className="product-footer">
-                      <span className="product-price">
-                        ${parseFloat(product.price || 0).toFixed(2)}
-                      </span>
+                    <div className="velure-card-body">
+                      <div>
+                        <h3 className="product-title">{product.name}</h3>
+                        {product.description && (
+                          <p className="product-desc">{product.description}</p>
+                        )}
+                      </div>
 
-                      <button
-                        type="button"
-                        className="btn-velure-add"
-                        onClick={(e) => handleAddToCart(product, e)}
-                        disabled={isOutOfStock}
-                      >
-                        <i className="bi bi-bag-plus"></i>
-                        {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-                      </button>
+                      <div className="product-footer">
+                        <span className="product-price">
+                          ${parseFloat(product.price || 0).toFixed(2)}
+                        </span>
+
+                        <button
+                          type="button"
+                          className="btn-velure-add"
+                          onClick={(e) => handleAddToCart(product, e)}
+                          disabled={isOutOfStock}
+                        >
+                          <i className="bi bi-bag-plus"></i>
+                          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                        </button>
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* 🔹 PAGINATION UI CONTROLS */}
+            {totalPages > 1 && (
+              <div className="pagination-wrapper">
+                <button
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <i className="bi bi-chevron-left"></i> Previous
+                </button>
+
+                <div className="pagination-numbers">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (pageNum) => (
+                      <button
+                        key={pageNum}
+                        className={`pagination-number ${
+                          pageNum === currentPage ? "active" : ""
+                        }`}
+                        onClick={() => handlePageChange(pageNum)}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  )}
                 </div>
-              );
-            })}
-          </div>
+
+                <button
+                  className="pagination-btn"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next <i className="bi bi-chevron-right"></i>
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="empty-state">
             <h3>No Products Found</h3>
@@ -318,11 +379,9 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
           </div>
         )}
       </div>
-      <Footer/>
+      <Footer />
     </div>
-    
   );
-  
 };
 
 export default Market;

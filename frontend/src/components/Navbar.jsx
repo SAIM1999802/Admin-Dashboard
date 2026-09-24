@@ -39,7 +39,7 @@ const Navbar = () => {
     localStorage.removeItem("user");
     setUser(null);
     setShowDropdown(false);
-    
+
     // Smooth redirect to homepage
     navigate("/homepage", { replace: true });
   };
@@ -62,56 +62,52 @@ const Navbar = () => {
           velure
         </div>
 
-
         <div className="velure-nav-pill">
           {isUserRole ? (
             <>
-
               <NavLink to="/homepage" className={navLinkClass}>
-                <span className="dot"></span> Home
+                <span></span> Home
               </NavLink>
-
-        
               <NavLink to="/market" className={navLinkClass}>
-                <span className="dot"></span> Market
+                <span></span> Market
               </NavLink>
               <NavLink to="/contactus" className={navLinkClass}>
-                <span className="dot"></span> Contact Us
+                <span></span> Contact Us
               </NavLink>
               <NavLink to="/aboutus" className={navLinkClass}>
-                <span className="dot"></span> About Us
+                <span></span> About Us
               </NavLink>
               <NavLink to="/blog" className={navLinkClass}>
-                <span className="dot"></span> Blog
+                <span></span> Blog
               </NavLink>
 
               {/* My Orders Link - Logged-in users only */}
               {user && (
                 <NavLink to="/my-orders" className={navLinkClass}>
-                  <span className="dot"></span> My Orders
+                  <span></span> My Orders
                 </NavLink>
               )}
             </>
           ) : (
             <>
               <NavLink to="/dashboard" className={navLinkClass}>
-                <span className="dot"></span> Dashboard
+                <span></span> Dashboard
               </NavLink>
 
               <NavLink to="/orders" className={navLinkClass}>
-                <span className="dot"></span> Orders
+                <span></span> Orders
               </NavLink>
 
               <NavLink to="/customers" className={navLinkClass}>
-                <span className="dot"></span> Customers
+                <span></span> Customers
               </NavLink>
 
               <NavLink to="/products" className={navLinkClass}>
-                <span className="dot"></span> Products
+                <span></span> Products
               </NavLink>
 
-              <NavLink to="/category" className={navLinkClass}>
-                <span className="dot"></span> Categories
+              <NavLink to="/categories" className={navLinkClass}>
+                <span></span> Categories
               </NavLink>
             </>
           )}

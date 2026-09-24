@@ -16,6 +16,7 @@ const EditProduct = () => {
   const [formData, setFormData] = useState({
     id: "",
     name: "",
+    stock_price: "",
     price: "",
     stock: "",
     description: "",
@@ -62,6 +63,7 @@ const EditProduct = () => {
           setFormData({
             id: product.id || "",
             name: product.name || "",
+            stock_price: product.stock_price || "",
             price: product.price || "",
             stock: product.stock_count ?? product.stock ?? "",
             description: product.description || "",
@@ -146,6 +148,7 @@ const EditProduct = () => {
       const payload = {
         name: formData.name.trim(),
         category_id: selectedCategory.id,
+        stock_price: parseFloat(formData. stock_price) || 0,
         price: parseFloat(formData.price) || 0,
         stock_count: parseInt(formData.stock, 10) || 0,
         description: formData.description.trim(),
@@ -245,7 +248,19 @@ const EditProduct = () => {
             </div>
 
             <div>
-              <label className="form-label-bold">PRICE ($)</label>
+              <label className="form-label-bold">STOCK PRICE ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                name="stock_price"
+                value={formData.stock_price}
+                onChange={handleInputChange}
+                required
+                className="form-control-custom"
+              />
+            </div>
+            <div>
+              <label className="form-label-bold">SELLING PRICE ($)</label>
               <input
                 type="number"
                 step="0.01"

@@ -484,7 +484,7 @@
 .hp-trust-row {
   display: flex;
   gap: 18px;
-  margin-top: 56px;
+  margin-top: 56px !important;
   flex-wrap: wrap;
 }
 
