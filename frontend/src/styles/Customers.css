@@ -890,3 +890,196 @@
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(255, 107, 53, 0.45);
 }
+
+/* Customers.css — synced with the product/admin theme
+   Palette: green #0B3D2E / #4A7C6F, orange #FF6B35 / #E85A2A, cream #FBF8F2 / #F5F0E6, border #E0D9CC */
+
+/* Page shell (same as .admin-page in the products CSS; harmless if duplicated) */
+.admin-page {
+  background: linear-gradient(180deg, #FBF8F2 0%, #F5F0E6 100%);
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+  color: #2C3E3A;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  padding-top: 24px;
+  padding-bottom: 40px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.page-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #0B3D2E;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* Card */
+.form-card {
+  width: 100%;
+  padding: 32px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid #E0D9CC;
+  box-shadow:
+    0 10px 25px rgba(11, 61, 46, 0.06),
+    0 4px 10px rgba(11, 61, 46, 0.03);
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .form-card { padding: 20px; }
+}
+
+/* Form fields */
+.custom-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.custom-form-label {
+  font-weight: 700;
+  color: #4A7C6F;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.custom-form-input,
+.custom-form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #E0D9CC;
+  outline: none;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  background-color: #FFFFFF;
+  color: #2C3E3A;
+  font-family: inherit;
+  transition: all 0.25s ease;
+}
+
+.custom-form-textarea { resize: vertical; min-height: 90px; }
+
+.custom-form-input::placeholder,
+.custom-form-textarea::placeholder { color: #A8B2AB; }
+
+.custom-form-input:focus,
+.custom-form-textarea:focus {
+  border-color: #4A7C6F;
+  box-shadow: 0 0 0 4px rgba(74, 124, 111, 0.12);
+}
+
+/* Buttons */
+.primary-btn,
+.btn-secondary,
+.btn-outline-primary {
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #FF6B35 0%, #E85A2A 100%);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.28);
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255, 107, 53, 0.45);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #2C3E3A;
+  border: 1px solid #E0D9CC;
+  font-weight: 600;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #F5F0E6;
+  color: #0B3D2E;
+}
+
+.btn-outline-primary {
+  background: transparent;
+  color: #E85A2A;
+  border: 1px solid rgba(232, 90, 42, 0.5);
+  font-weight: 600;
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+  background: rgba(232, 90, 42, 0.1);
+  border-color: #E85A2A;
+  transform: translateY(-1px);
+}
+
+.primary-btn:disabled,
+.btn-secondary:disabled,
+.btn-outline-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Alerts */
+.custom-alert {
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+}
+
+.custom-alert-success {
+  background: rgba(74, 124, 111, 0.12);
+  color: #0B3D2E;
+  border-color: rgba(74, 124, 111, 0.35);
+}
+
+.custom-alert-danger {
+  background: rgba(232, 90, 42, 0.1);
+  color: #C53030;
+  border-color: rgba(232, 90, 42, 0.35);
+}
+
+/* Loader */
+.loading-text {
+  font-weight: 600;
+  color: #0B3D2E;
+}
+
+.custom-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid #E0D9CC;
+  border-top-color: #FF6B35;
+  border-radius: 50%;
+  animation: customer-spin 0.8s linear infinite;
+}
+
+@keyframes customer-spin {
+  to { transform: rotate(360deg); }
+}

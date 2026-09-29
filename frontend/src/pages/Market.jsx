@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Chatbot from "../components/Chatbot"
 import Navbar from "../components/Navbar";
 import CartDrawer from "../components/CartDrawer";
 import { getProducts } from "../services/api";
@@ -231,7 +232,7 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
           <i className="bi bi-x-lg"></i>
         </button>
       </div>
-
+      <Chatbot/>
       <CartDrawer
         cart={cart}
         products={products}

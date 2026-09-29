@@ -80,10 +80,9 @@ export const deleteCustomer = (id) => API.delete(`/customers/${id}`);
 export const updateCustomer = (id, data) => API.put(`/customers/${id}`, data);
 export const getCustomerById = (id) => API.get(`/customers/${id}`);
 
-// 🔴 FIX: 304 Cache Bypass & Unwrapped Response
 export const getCustomerDetails = async (id) => {
   const response = await API.get(`/customers/${id}`, {
-    params: { _t: Date.now() }, // Browser caching aur 304 avoid karne ke liye timestamp query
+    params: { _t: Date.now() },
     headers: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',

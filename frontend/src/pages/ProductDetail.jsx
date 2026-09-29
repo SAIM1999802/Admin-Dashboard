@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProductDetails } from "../services/api";
+import Chatbot from "../components/Chatbot"
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
 import "../styles/Market.css";
 import "../styles/Products.css";
@@ -148,7 +149,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
     const existingIndex = cart.findIndex(
       (item) =>
         String(item.product) === String(productId) ||
-        String(item.id) === String(productId),
+        String(item.id) === String(productId)
     );
 
     let updatedCart = [];
@@ -157,14 +158,14 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
       if (currentQtyInCart + quantity > availableStock) {
         triggerToast(
           `Cannot add more than available stock (${availableStock})`,
-          "danger",
+          "danger"
         );
         return;
       }
       updatedCart = cart.map((item, index) =>
         index === existingIndex
           ? { ...item, quantity: item.quantity + quantity }
-          : item,
+          : item
       );
     } else {
       updatedCart = [
@@ -235,7 +236,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
     const updated = reviews.map((item) =>
       item.id === reviewId
         ? { ...item, rating: editRating, comment: editComment }
-        : item,
+        : item
     );
 
     saveReviewsToStorage(updated);
@@ -261,7 +262,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
     }
 
     const updated = reviews.map((item) =>
-      item.id === reviewId ? { ...item, adminReply: replyText } : item,
+      item.id === reviewId ? { ...item, adminReply: replyText } : item
     );
 
     saveReviewsToStorage(updated);
@@ -276,7 +277,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
     }
 
     const updated = reviews.map((item) =>
-      item.id === reviewId ? { ...item, adminReply: editReplyText } : item,
+      item.id === reviewId ? { ...item, adminReply: editReplyText } : item
     );
 
     saveReviewsToStorage(updated);
@@ -338,6 +339,15 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
   const stockCount =
     product.stock ?? product.countInStock ?? product.quantity ?? 0;
 
+  // Price Calculations for Admin
+  const sellingPrice = parseFloat(product.price || 0);
+  const stockPrice = parseFloat(
+    product.stock_price ?? product.stockPrice ?? product.costPrice ?? 0
+  );
+  const profitMargin = sellingPrice - stockPrice;
+  const profitPercentage =
+    stockPrice > 0 ? ((profitMargin / stockPrice) * 100).toFixed(1) : 0;
+
   return (
     <div className="product-detail-wrapper">
       <Navbar />
@@ -357,7 +367,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
               <i className="bi bi-x-lg"></i>
             </button>
           </div>
-
+          <Chatbot/>
           <CartDrawer
             cart={cart}
             products={product ? [product] : []}
@@ -367,6 +377,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
             triggerToast={triggerToast}
             updateCartCount={updateCartCount}
           />
+
         </>
       )}
 
@@ -459,15 +470,92 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
             >
               {product.description}
             </p>
-            <h3
-              style={{
-                marginTop: "16px",
-                color: "#124d45",
-                fontSize: "1.8rem",
-              }}
-            >
-              ${parseFloat(product.price || 0).toFixed(2)}
-            </h3>
+
+            {/* ADMIN VS USER PRICE DISPLAY */}
+            {isAdmin ? (
+              /* ADMIN PRICING & MARGIN PANEL */
+              <div
+                style={{
+                  marginTop: "16px",
+                  padding: "16px",
+                  backgroundColor: "#f8fafc",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    fontWeight: "700",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                    color: "#64748b",
+                    marginBottom: "12px",
+                  }}
+                >
+                  <i className="bi bi-shield-lock-fill me-1"></i> Admin Financial Details
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
+                    gap: "12px",
+                  }}
+                >
+                  {/* Selling Price */}
+                  <div>
+                    <span style={{ fontSize: "0.8rem", color: "#64748b", display: "block" }}>
+                      Selling Price
+                    </span>
+                    <strong style={{ fontSize: "1.4rem", color: "#0f172a" }}>
+                      ${sellingPrice.toFixed(2)}
+                    </strong>
+                  </div>
+
+                  {/* Stock Price (Cost) */}
+                  <div>
+                    <span style={{ fontSize: "0.8rem", color: "#64748b", display: "block" }}>
+                      Stock Cost Price
+                    </span>
+                    <strong style={{ fontSize: "1.4rem", color: "#475569" }}>
+                      ${stockPrice.toFixed(2)}
+                    </strong>
+                  </div>
+
+                  {/* Estimated Profit Margin */}
+                  <div>
+                    <span style={{ fontSize: "0.8rem", color: "#64748b", display: "block" }}>
+                      Est. Profit Margin
+                    </span>
+                    <strong
+                      style={{
+                        fontSize: "1.4rem",
+                        color: profitMargin >= 0 ? "#16a34a" : "#dc2626",
+                      }}
+                    >
+                      ${profitMargin.toFixed(2)}
+                      {stockPrice > 0 && (
+                        <span style={{ fontSize: "0.75rem", marginLeft: "4px" }}>
+                          ({profitPercentage}%)
+                        </span>
+                      )}
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* REGULAR USER PRICE DISPLAY */
+              <h3
+                style={{
+                  marginTop: "16px",
+                  color: "#124d45",
+                  fontSize: "1.8rem",
+                }}
+              >
+                ${sellingPrice.toFixed(2)}
+              </h3>
+            )}
 
             {/* ADD TO CART & QUANTITY CONTROLS (Only for Normal Users) */}
             {!isAdmin && (
@@ -496,8 +584,9 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
                   {stockCount > 0 ? "Add to Cart" : "Out of Stock"}
                 </button>
               </div>
+               
             )}
-          </div>  
+          </div>
         </div>
 
         {/* REVIEWS & RATINGS SECTION */}
@@ -562,7 +651,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
                           </label>
                           <div>
                             {renderStars(editRating, (val) =>
-                              setEditRating(val),
+                              setEditRating(val)
                             )}
                           </div>
                         </div>
@@ -719,7 +808,7 @@ const ProductDetail = ({ cart = [], setCart = () => {}, updateCartCount }) => {
           </div>
         </div>
       </div>
-      <Footer />  
+      <Footer />
     </div>
   );
 };

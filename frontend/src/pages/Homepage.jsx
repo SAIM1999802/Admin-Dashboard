@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
+import Chatbot from "../components/Chatbot";
 import { getProducts } from "../services/api";
 import "../styles/Homepage.css";
 
@@ -404,6 +405,8 @@ export default function HomePage({ cart = [], setCart, updateCartCount }) {
         </button>
       </div>
 
+
+      <Chatbot/>
       <CartDrawer
         cart={cart}
         products={products}

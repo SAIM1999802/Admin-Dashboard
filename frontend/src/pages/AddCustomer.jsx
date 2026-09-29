@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { createCustomer } from "../services/api";
 import "../styles/Customers.css";
 
@@ -34,9 +33,7 @@ const AddCustomer = () => {
       setLoading(true);
       setMessage({ type: "", text: "" });
 
-      if (typeof createCustomer === "function") {
-        await createCustomer(formData);
-      }
+      await createCustomer(formData);
 
       setMessage({ type: "success", text: "Customer added successfully!" });
 
@@ -57,105 +54,98 @@ const AddCustomer = () => {
   };
 
   return (
-    <>
+    <main className="admin-page container">
+      <div className="row">
+        <div className="col-12">
+          <div className="page-header">
+            <h1 className="page-title">Add New Customer</h1>
 
+            <div className="d-flex gap-2">
+              <button
+                type="button"
+                className="btn-outline-primary"
+                onClick={() => navigate("/orders/add")}
+              >
+                <i className="bi bi-cart-plus me-1"></i>
+                Create Order
+              </button>
 
-      <main className="admin-page container">
-        <div className="row">
-          <div className="col-12">
-            <div className="page-header">
-              <h1 className="page-title">Add New Customer</h1>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => navigate("/customers")}
+              >
+                <i className="bi bi-arrow-left me-1"></i>
+                Back to List
+              </button>
+            </div>
+          </div>
 
-              <div className="d-flex gap-2">
-                <button
-                  type="button"
-                  className="btn-outline-primary"
-                  onClick={() => navigate("/orders/add")}
-                >
-                  <i className="bi bi-cart-plus me-1"></i>
-                  Create Order
-                </button>
+          <div className="form-card mx-auto" style={{ maxWidth: "650px" }}>
+            {message.text && (
+              <div
+                className={`custom-alert ${
+                  message.type === "success"
+                    ? "custom-alert-success"
+                    : "custom-alert-danger"
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
 
+            <form onSubmit={handleSubmit}>
+              <div className="custom-form-group">
+                <label htmlFor="customerName" className="custom-form-label">
+                  Customer Name <span style={{ color: "#E85A2A" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  className="custom-form-input"
+                  id="customerName"
+                  name="name"
+                  placeholder="Enter customer full name..."
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="custom-form-group">
+                <label htmlFor="customerEmail" className="custom-form-label">
+                  Email Address <span style={{ color: "#E85A2A" }}>*</span>
+                </label>
+                <input
+                  type="email"
+                  className="custom-form-input"
+                  id="customerEmail"
+                  name="email"
+                  placeholder="enter.email@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="d-flex justify-content-between align-items-center mt-4">
                 <button
                   type="button"
                   className="btn-secondary"
                   onClick={() => navigate("/customers")}
+                  disabled={loading}
                 >
-                  <i className="bi bi-arrow-left me-1"></i>
-                  Back to List
+                  Cancel
+                </button>
+
+                <button type="submit" className="primary-btn" disabled={loading}>
+                  {loading ? "Saving..." : "Save Customer"}
                 </button>
               </div>
-            </div>
-
-            <div className="form-card mx-auto" style={{ maxWidth: "650px" }}>
-              {message.text && (
-                <div
-                  className={`custom-alert ${
-                    message.type === "success"
-                      ? "custom-alert-success"
-                      : "custom-alert-danger"
-                  }`}
-                >
-                  {message.text}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit}>
-                <div className="custom-form-group">
-                  <label htmlFor="customerName" className="custom-form-label">
-                    Customer Name <span style={{ color: "#d93838" }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="custom-form-input"
-                    id="customerName"
-                    name="name"
-                    placeholder="Enter customer full name..."
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="custom-form-group">
-                  <label htmlFor="customerEmail" className="custom-form-label">
-                    Email Address <span style={{ color: "#d93838" }}>*</span>
-                  </label>
-                  <input
-                    type="email"
-                    className="custom-form-input"
-                    id="customerEmail"
-                    name="email"
-                    placeholder="enter.email@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="d-flex justify-content-between align-items-center mt-4">
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => navigate("/customers")}
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="primary-btn"
-                    disabled={loading}
-                  >
-                    {loading ? "Saving..." : "Save Customer"}
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 };
 
