@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import "../styles/Chatbot.css";
 
-const QUICK_REPLIES = ["Mera cart dikhao", "Top recommended products", "Track my order"];
+const QUICK_REPLIES = ["Show me my cart", "Top recommended products", "Track my order"];
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
