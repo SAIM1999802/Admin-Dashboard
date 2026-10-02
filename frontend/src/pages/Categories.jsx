@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { getCategories, deleteCategory, getProducts } from "../services/api";
 import "../styles/Category.css";
+import AdminBot from "../components/AdminBot";
 
 const extractDataArray = (res) => {
   if (Array.isArray(res)) return res;
@@ -202,6 +203,7 @@ const Categories = () => {
           </div>
         </div>
       </main>
+      <AdminBot/>
     </>
   );
 };

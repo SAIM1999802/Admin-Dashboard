@@ -27,7 +27,9 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
 
-  // Helper Functions
+  // ---------------------------------------------------------------
+  // Helper Functions (localStorage sirf login ke baad use hoga)
+  // ---------------------------------------------------------------
   const getUser = () => {
     try {
       const userStr = localStorage.getItem("user");
@@ -49,20 +51,24 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
   };
 
   const loadUserCart = () => {
-    if (isAuthenticated()) {
-      const key = getCartKey();
-      const savedCart = localStorage.getItem(key);
-      if (savedCart) {
-        try {
-          setCart(JSON.parse(savedCart));
-        } catch (e) {
-          setCart([]);
-        }
-      } else {
-        setCart([]);
+    // LOGOUT: cart screen se hata do aur purani generic "cart" key bhi saaf karo.
+    // (Per-user cart_<id> key delete nahi hoti, taake login par wapas aa jaye.)
+    if (!isAuthenticated()) {
+      try {
+        localStorage.removeItem("cart");
+      } catch (e) {
+        console.error("Failed to clear legacy cart:", e);
       }
-    } else {
-      setCart([]);
+      if (setCart) setCart([]);
+      return;
+    }
+
+    // LOGIN: user ka saved cart wapas load karo
+    try {
+      const savedCart = localStorage.getItem(getCartKey());
+      if (setCart) setCart(savedCart ? JSON.parse(savedCart) : []);
+    } catch (e) {
+      if (setCart) setCart([]);
     }
   };
 
@@ -70,16 +76,20 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
     loadUserCart();
     fetchMarketProducts();
 
-    const handleStorageChange = () => {
+    // Login / logout / cart change par cart dobara sync hoga
+    const handleAuthOrCartChange = () => {
+      if (!isAuthenticated()) setIsDrawerOpen(false);
       loadUserCart();
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("cartUpdated", handleStorageChange);
+    window.addEventListener("storage", handleAuthOrCartChange); // doosre tab mein login/logout
+    window.addEventListener("cartUpdated", handleAuthOrCartChange);
+    window.addEventListener("authChanged", handleAuthOrCartChange); // same tab mein login/logout
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("cartUpdated", handleStorageChange);
+      window.removeEventListener("storage", handleAuthOrCartChange);
+      window.removeEventListener("cartUpdated", handleAuthOrCartChange);
+      window.removeEventListener("authChanged", handleAuthOrCartChange);
     };
   }, []);
 
@@ -162,12 +172,19 @@ const Market = ({ cart = [], setCart, updateCartCount }) => {
   };
 
   const persistCart = (updatedCart) => {
-    setCart(updatedCart);
-    if (isAuthenticated()) {
-      const key = getCartKey();
-      localStorage.setItem(key, JSON.stringify(updatedCart));
-      window.dispatchEvent(new Event("cartUpdated"));
+    // Logout ho to na state mein cart rakho, na localStorage mein likho
+    if (!isAuthenticated()) {
+      if (setCart) setCart([]);
+      return;
     }
+
+    if (setCart) setCart(updatedCart);
+    try {
+      localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
+    } catch (e) {
+      console.error("Failed to save cart:", e);
+    }
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const handleAddToCart = (product, e) => {

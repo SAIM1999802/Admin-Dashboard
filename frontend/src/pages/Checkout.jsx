@@ -1,23 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { addOrder, getProducts } from "../services/api";
 import "../styles/Checkout.css";
 
-const getRegisteredEmail = () => {
+// ---------------------------------------------------------------
+// Auth + localStorage helpers (sab kuch sirf login ke baad chalega)
+// ---------------------------------------------------------------
+const getUser = () => {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    return user?.email || "";
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
   } catch (error) {
-    console.error("Failed to get registered user:", error);
-    return "";
+    console.error("User parsing error:", error);
+    return null;
+  }
+};
+
+const isAuthenticated = () => {
+  return Boolean(localStorage.getItem("token") || getUser());
+};
+
+const getCartKey = () => {
+  const user = getUser();
+  const userId = user?.id || user?._id || user?.email || "guest";
+  return `cart_${userId}`;
+};
+
+const getRegisteredEmail = () => {
+  // Logout ke baad email bhi nahi dikhni chahiye
+  if (!isAuthenticated()) return "";
+  return getUser()?.email || "";
+};
+
+const loadSavedCart = () => {
+  if (!isAuthenticated()) return [];
+  try {
+    const saved = localStorage.getItem(getCartKey());
+    return saved ? JSON.parse(saved) : [];
+  } catch (error) {
+    console.error("Failed to load saved cart:", error);
+    return [];
   }
 };
 
 export default function Checkout({ cartItems = [], setCartItems, clearCart }) {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [items, setItems] = useState(cartItems);
+  // Logout ho to cart khali, login ho to props wala cart
+  const [items, setItems] = useState(() => (isAuthenticated() ? cartItems : []));
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = "danger") => {
@@ -45,6 +76,34 @@ export default function Checkout({ cartItems = [], setCartItems, clearCart }) {
     billingPostalCode: "",
   });
 
+  // Login / logout hone par cart aur email sync karo
+  useEffect(() => {
+    const syncWithAuth = () => {
+      if (!isAuthenticated()) {
+        // LOGOUT: cart aur email hata do
+        setItems([]);
+        if (setCartItems) setCartItems([]);
+        setFormData((prev) => ({ ...prev, email: "" }));
+        return;
+      }
+
+      // LOGIN: user ka saved cart aur email wapas lao
+      const savedItems = loadSavedCart();
+      setItems(savedItems);
+      if (setCartItems) setCartItems(savedItems);
+      setFormData((prev) => ({ ...prev, email: getRegisteredEmail() }));
+    };
+
+    window.addEventListener("storage", syncWithAuth); // doosre tab mein login/logout
+    window.addEventListener("authChanged", syncWithAuth); // same tab mein login/logout
+
+    return () => {
+      window.removeEventListener("storage", syncWithAuth);
+      window.removeEventListener("authChanged", syncWithAuth);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const subtotal = items.reduce(
     (acc, item) =>
       acc + (Number(item.price) || 0) * (Number(item.quantity) || 1),
@@ -62,10 +121,18 @@ export default function Checkout({ cartItems = [], setCartItems, clearCart }) {
   };
 
   const persistCartItems = (updatedItems) => {
+    // Logout ho to cart na state mein rakho, na localStorage mein likho
+    if (!isAuthenticated()) {
+      setItems([]);
+      if (setCartItems) setCartItems([]);
+      return;
+    }
+
     setItems(updatedItems);
     if (setCartItems) setCartItems(updatedItems);
     try {
-      localStorage.setItem("cart", JSON.stringify(updatedItems));
+      localStorage.setItem(getCartKey(), JSON.stringify(updatedItems));
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
       console.error("Failed to persist cart:", err);
     }
@@ -155,6 +222,11 @@ export default function Checkout({ cartItems = [], setCartItems, clearCart }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated()) {
+      showToast("Please login first", "danger");
+      return;
+    }
 
     if (items.length === 0) {
       alert("Your cart is empty!");
@@ -266,7 +338,9 @@ export default function Checkout({ cartItems = [], setCartItems, clearCart }) {
       if (clearCart) clearCart();
 
       try {
-        localStorage.removeItem("cart");
+        localStorage.removeItem(getCartKey()); // user ka cart
+        localStorage.removeItem("cart"); // purani generic key
+        window.dispatchEvent(new Event("cartUpdated"));
       } catch (error) {
         console.error("Failed to clear local cart:", error);
       }

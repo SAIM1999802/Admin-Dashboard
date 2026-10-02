@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Chatbot from "../components/Chatbot";
+import AdminBot from "../components/adminbot";
 import { getProducts, getOrders, getCustomers } from "../services/api";
 import "../styles/Dashboard.css";
 import * as XLSX from "xlsx";
@@ -704,6 +704,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <AdminBot/>
     </>
   );
 };

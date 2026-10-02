@@ -1,0 +1,880 @@
+
+/* ==========================================================
+   ADMIN BOT — SAME VELURE THEME
+   Deep green header · orange accents · cream body
+   ========================================================== */
+
+:root {
+  --adminbot-green-deep: #063f32;
+  --adminbot-green: #0a3d2e;
+  --adminbot-green-mid: #164f42;
+  --adminbot-orange: #ff6233;
+  --adminbot-orange-hover: #f9572b;
+  --adminbot-cream: #f7f3ea;
+  --adminbot-text: #164f42;
+  --adminbot-muted: #8a9690;
+}
+
+/* ==========================================================
+   FLOATING BUTTON
+   ========================================================== */
+
+.adminbot-button-wrapper {
+  position: fixed !important;
+  right: 11px !important;
+  bottom: 70px !important;
+  top: auto !important;
+  left: auto !important;
+  width: 62px;
+  height: 60px;
+  z-index: 9999;
+}
+
+.adminbot-trigger {
+  position: relative;
+  width: 62px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  background:#063f32 !important;
+  color: #ffffff;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 8px 20px rgba(255, 98, 51, 0.30),
+    0 4px 12px rgba(0, 0, 0, 0.12);
+
+  z-index: 9999;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.adminbot-trigger:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: var(--adminbot-orange-hover);
+
+  box-shadow:
+    0 12px 28px rgba(255, 98, 51, 0.38),
+    0 5px 15px rgba(0, 0, 0, 0.14);
+}
+
+/* Pulse */
+
+.adminbot-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 98, 51, 0.55);
+
+  animation: adminbotPulse 2.2s ease-out infinite;
+
+  pointer-events: none;
+}
+
+@keyframes adminbotPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  70% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================
+   TOOLTIP
+   ========================================================== */
+
+.adminbot-tooltip {
+  position: absolute;
+  right: 74px;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    translateX(8px);
+
+  padding: 8px 13px;
+
+  background: var(--adminbot-green-deep);
+  color: #ffffff;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.adminbot-tooltip::after {
+  content: "";
+
+  position: absolute;
+  right: -5px;
+  top: 50%;
+
+  width: 10px;
+  height: 10px;
+
+  background: var(--adminbot-green-deep);
+
+  transform:
+    translateY(-50%)
+    rotate(45deg);
+}
+
+.adminbot-button-wrapper:hover
+.adminbot-tooltip {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateY(-50%)
+    translateX(0);
+}
+
+/* ==========================================================
+   CHAT WINDOW
+   ========================================================== */
+
+.adminbot-window {
+  position: fixed !important;
+
+  right: 25px !important;
+  bottom: 100px !important;
+
+  top: auto !important;
+  left: auto !important;
+
+  width: 370px;
+  height: 520px;
+
+  background: var(--adminbot-cream);
+
+  border-radius: 22px;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  border:
+    1px solid rgba(6, 63, 50, 0.18);
+
+  box-shadow:
+    0 20px 60px rgba(6, 63, 50, 0.18),
+    0 8px 25px rgba(0, 0, 0, 0.12);
+
+  z-index: 9998;
+
+  animation: adminbotOpen 0.25s ease-out;
+}
+
+@keyframes adminbotOpen {
+  from {
+    opacity: 0;
+    transform:
+      translateY(15px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+
+.adminbot-header {
+  min-height: 76px;
+
+  padding:
+    0 16px
+    0 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--adminbot-green) 0%,
+      var(--adminbot-green-deep) 100%
+    );
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  flex-shrink: 0;
+}
+
+.adminbot-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adminbot-avatar {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.12);
+
+  border:
+    1.5px solid
+    rgba(255, 255, 255, 0.25);
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.adminbot-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminbot-header h3 {
+  margin: 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 19px;
+  font-weight: 600;
+
+  letter-spacing: -0.2px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff8a5c 0%,
+      var(--adminbot-orange) 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  -webkit-text-fill-color: transparent;
+}
+
+.adminbot-status {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin-top: 3px;
+
+  color: #d9eee7;
+
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.adminbot-status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #72d6a2;
+
+  display: inline-block;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(114, 214, 162, 0.2);
+}
+
+.adminbot-close {
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background 0.2s ease,
+    transform 0.25s ease;
+}
+
+.adminbot-close:hover {
+  background: var(--adminbot-orange);
+  transform: rotate(90deg);
+}
+
+/* ==========================================================
+   CHAT BODY
+   ========================================================== */
+
+.adminbot-body {
+  flex: 1;
+
+  padding: 18px 16px;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 98, 51, 0.06),
+      transparent 40%
+    ),
+    var(--adminbot-cream);
+
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+.adminbot-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.adminbot-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adminbot-body::-webkit-scrollbar-thumb {
+  background:
+    rgba(6, 63, 50, 0.22);
+
+  border-radius: 10px;
+}
+
+/* ==========================================================
+   MESSAGE ROWS
+   ========================================================== */
+
+.adminbot-chat-row {
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 8px;
+
+  animation:
+    adminbotMsgIn
+    0.25s ease-out;
+}
+
+.adminbot-chat-row-user {
+  justify-content: flex-end;
+}
+
+@keyframes adminbotMsgIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mini avatar */
+
+.adminbot-avatar-mini {
+  width: 26px;
+  height: 26px;
+
+  border-radius: 50%;
+
+  background:
+    var(--adminbot-green-deep);
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-family:
+    Georgia,
+    serif;
+}
+
+/* ==========================================================
+   CHAT BUBBLES
+   ========================================================== */
+
+.adminbot-chat-bubble {
+  max-width: 78%;
+
+  padding:
+    10px 14px;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  border:
+    1px solid
+    rgba(6, 63, 50, 0.07);
+
+  animation:
+    adminbotMsgIn
+    0.25s ease-out;
+}
+
+.adminbot-chat-bubble p {
+  margin: 0;
+}
+
+.adminbot-bot-message {
+  background: #ffffff;
+
+  border-radius:
+    15px 15px
+    15px 4px;
+
+  color:
+    var(--adminbot-text);
+
+  box-shadow:
+    0 4px 12px
+    rgba(6, 63, 50, 0.06);
+}
+
+.adminbot-user-message {
+  background:
+    linear-gradient(
+      135deg,
+      var(--adminbot-orange) 0%,
+      var(--adminbot-orange-hover) 100%
+    );
+
+  border-radius:
+    15px 15px
+    4px 15px;
+
+  color: #ffffff;
+
+  border: none;
+
+  box-shadow:
+    0 4px 12px
+    rgba(255, 98, 51, 0.22);
+}
+
+.adminbot-chat-time {
+  display: block;
+
+  font-size: 10.5px;
+
+  margin-top: 5px;
+
+  opacity: 0.65;
+
+  text-align: right;
+}
+
+.adminbot-bot-message
+.adminbot-chat-time {
+  color: var(--adminbot-muted);
+}
+
+.adminbot-user-message
+.adminbot-chat-time {
+  color:
+    rgba(255, 255, 255, 0.85);
+}
+
+/* ==========================================================
+   TYPING
+   ========================================================== */
+
+.adminbot-typing-bubble {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding:
+    14px 16px;
+}
+
+.adminbot-typing-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(6, 63, 50, 0.35);
+
+  animation:
+    adminbotTyping
+    1.2s ease-in-out infinite;
+}
+
+.adminbot-typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.adminbot-typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes adminbotTyping {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* ==========================================================
+   QUICK REPLIES
+   ========================================================== */
+
+.adminbot-quick-replies {
+  display: flex;
+
+  gap: 8px;
+
+  padding:
+    10px 16px
+    4px;
+
+  flex-wrap: wrap;
+
+  flex-shrink: 0;
+}
+
+.adminbot-quick-chip {
+  border:
+    1px solid
+    rgba(255, 98, 51, 0.4);
+
+  background:
+    rgba(255, 98, 51, 0.08);
+
+  color:
+    var(--adminbot-orange);
+
+  padding:
+    7px 14px;
+
+  border-radius: 999px;
+
+  font-size: 12.5px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    all 0.2s ease;
+}
+
+.adminbot-quick-chip:hover:not(:disabled) {
+  background:
+    var(--adminbot-orange);
+
+  color: #ffffff;
+
+  border-color:
+    var(--adminbot-orange);
+}
+
+.adminbot-quick-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   INPUT
+   ========================================================== */
+
+.adminbot-input-area {
+  min-height: 70px;
+
+  padding: 11px;
+
+  background: #ffffff;
+
+  border-top:
+    1px solid
+    rgba(6, 63, 50, 0.09);
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  flex-shrink: 0;
+}
+
+.adminbot-input-area input {
+  flex: 1;
+
+  height: 44px;
+
+  border:
+    1px solid
+    #d7ddd8;
+
+  border-radius: 12px;
+
+  padding:
+    0 14px;
+
+  outline: none;
+
+  background:
+    #fafaf8;
+
+  color:
+    var(--adminbot-text);
+
+  font-size: 14px;
+
+  font-family: inherit;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.adminbot-input-area input::placeholder {
+  color:
+    var(--adminbot-muted);
+}
+
+.adminbot-input-area input:focus {
+  border-color:
+    var(--adminbot-orange);
+
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(255, 98, 51, 0.10);
+}
+
+/* Send */
+
+.adminbot-send {
+  width: 44px;
+  height: 44px;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 12px;
+
+  background:
+    var(--adminbot-orange);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 5px 12px
+    rgba(255, 98, 51, 0.22);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.adminbot-send:hover:not(:disabled) {
+  background:
+    var(--adminbot-orange-hover);
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 7px 16px
+    rgba(255, 98, 51, 0.30);
+}
+
+.adminbot-send:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.adminbot-send:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 500px) {
+  .adminbot-button-wrapper {
+    right: 15px !important;
+    bottom: 85px !important;
+    top: auto !important;
+    left: auto !important;
+  }
+
+  .adminbot-trigger {
+    width: 56px;
+    height: 56px;
+  }
+
+  .adminbot-tooltip {
+    display: none;
+  }
+
+  .adminbot-window {
+    right: 15px !important;
+    bottom: 85px !important;
+
+    width:
+      calc(100% - 30px);
+
+    height: 70vh;
+  }
+}
+
+/* =========================================================
+   ADMIN BOT TABLE STYLING
+   ========================================================= */
+
+   .adminbot-bot-message {
+    max-width: 90% !important; /* Table fit karne ke liye width extend ki hai */
+  }
+  
+  .adminbot-table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .adminbot-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.83rem;
+    text-align: left;
+    font-family: inherit;
+  }
+  
+  .adminbot-table thead {
+    background-color: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  
+  .adminbot-table th {
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
+  }
+  
+  .adminbot-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    white-space: nowrap;
+  }
+  
+  .adminbot-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .adminbot-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+  
+  /* Scrollbar polish for table container */
+  .adminbot-table-container::-webkit-scrollbar {
+    height: 5px;
+  }
+  
+  .adminbot-table-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  
+  .adminbot-table-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  
+  .adminbot-table-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }

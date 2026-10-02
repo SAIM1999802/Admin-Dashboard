@@ -1,0 +1,6 @@
+langchain
+langchain-core
+langchain-groq
+pymysql
+python-dotenv
+torch

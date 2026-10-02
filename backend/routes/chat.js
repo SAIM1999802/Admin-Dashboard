@@ -6,33 +6,35 @@ const verifyToken = require("../middleware/authMiddleware"); // Check karein aap
 // POST /api/chat
 router.post("/chat", verifyToken, async (req, res) => {
   try {
-    const { message } = req.body;
-    // VerifyToken middleware se attached user object se user ID nikalna
+    const { message, sessionId } = req.body;
     const userId = req.user ? req.user.id || req.user.userId : null;
 
     if (!message || !message.trim()) {
       return res.status(400).json({ error: "Message cannot be empty." });
     }
 
-    // Python FastAPI Chatbot Service ko request proxy karna
+    // FastAPI Chatbot Service ko correct snake_case keys ke sath request proxy karna
     const pythonResponse = await axios.post("http://127.0.0.1:8000/chat", {
       message: message,
-      userId: userId,
+      user_id: userId,
+      session_id: sessionId || `session_${userId || 'guest'}`, // Fallback session ID
     });
 
-    return res.json({ response: pythonResponse.data.response });
+    // FastAPI se "reply" aa raha hai, usko "response" key mein map kar rahe hain
+    const botReply = pythonResponse.data.reply || pythonResponse.data.response;
+
+    return res.json({ response: botReply });
   } catch (error) {
-    // Console par detailed error log check karein
     if (error.response) {
       console.error(
         "Python FastAPI Error Response:",
         error.response.status,
-        error.response.data,
+        error.response.data
       );
     } else if (error.request) {
       console.error(
         "No Response from Python Server (Is FastAPI Running?):",
-        error.message,
+        error.message
       );
     } else {
       console.error("Express Internal Error:", error.message);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import AdminBot from "../components/AdminBot";
 import { getCustomers, deleteCustomer } from "../services/api";
 import "../styles/Customers.css";
 
@@ -257,6 +258,7 @@ const Customers = () => {
           </div>
         </div>
       </main>
+      <AdminBot/>
     </>
   );
 };

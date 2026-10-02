@@ -18,7 +18,6 @@ API.interceptors.request.use(
   }
 );
 
-// RESPONSE INTERCEPTOR: Unauthorized access manage karta hai
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -55,10 +54,8 @@ export const addProduct = (productData) => API.post('/products', productData);
 export const updateProduct = (id, data) => API.put(`/products/${id}`, data);
 export const deleteProduct = (id) => API.delete(`/products/${id}`);
 
-// PAYMENTS
 export const verifyPaymentSession = (sessionId) => API.post('/payment/verify-session', { sessionId });
 
-// ORDERS MANAGEMENT
 export const getOrders = () => API.get('/orders');
 export const addOrder = (orderData) => API.post('/orders', orderData);
 export const getOrderDetails = async (id) => {
@@ -70,7 +67,6 @@ export const getOrderById = (id) => API.get(`/orders/${id}`);
 export const deleteOrder = (id) => API.delete(`/orders/${id}`);
 export const getDeletedOrders = () => API.get('/orders/deleted');
 
-// CUSTOMERS MANAGEMENT
 export const getCustomers = () => API.get('/customers');
 export const createCustomer = async (customerData) => {
   const response = await API.post('/customers', customerData);
@@ -89,11 +85,9 @@ export const getCustomerDetails = async (id) => {
     }
   });
 
-  // Safe Unwrapping for both { success: true, data: {...} } and direct object formats
   return response.data?.data || response.data;
 };
 
-// CATEGORIES MANAGEMENT
 export const getCategories = async () => {
   const response = await API.get('/category/get-all');
   return response.data?.data || response.data;

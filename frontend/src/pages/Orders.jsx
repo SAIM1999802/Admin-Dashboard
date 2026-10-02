@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import AdminBot from "../components/AdminBot";
 import { getOrders, getDeletedOrders, deleteOrder } from "../services/api";
 import "../styles/Orders.css";
 
@@ -324,6 +325,7 @@ const Orders = () => {
           </div>
         </div>
       </main>
+      <AdminBot/>
     </>
   );
 };

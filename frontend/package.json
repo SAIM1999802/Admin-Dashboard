@@ -24,6 +24,7 @@
     "react-router-dom": "^7.18.2",
     "react-select": "^5.10.2",
     "recharts": "^3.10.1",
+    "remark-gfm": "^4.0.1",
     "stripe": "^22.6.0",
     "xlsx": "^0.18.5"
   },
