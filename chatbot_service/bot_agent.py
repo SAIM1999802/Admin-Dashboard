@@ -230,7 +230,7 @@ system_prompt = (
     "2. When checking order status, pass the user_id provided in the prompt context to the get_user_orders tool.\n"
     "3. NEVER return product lists as Markdown Tables.\n"
     "4. Always present each product line-by-line as an itemized list using this EXACT format:\n\n"
-    "   * **[Product Name](/products/detail/{id})** - ${Price}\n"
+    "   * **[Product Name](/products/detail/:{id})** - ${Price}\n"
     "     * Category: {Category}\n"
     "     * Description: {Description}\n"
     "     * Stock: {Stock} units available\n\n"

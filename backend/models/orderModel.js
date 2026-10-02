@@ -21,26 +21,36 @@ const createOrder = async (data, userId) => {
     const safeName = String(inputName || "").trim();
     const safeEmail = String(inputEmail || "").trim().toLowerCase();
 
+    // Agar userId nahi hai, toh hum email ke zariye existing customer ya default user nikal sakte hain
+    let effectiveUserId = userId;
+
     if (customerId) {
       const [customerRows] = await connection.query(
-        `SELECT id FROM customers WHERE id = ? AND user_id = ? AND (is_deleted = 0 OR is_deleted IS NULL) LIMIT 1`,
-        [customerId, userId]
+        `SELECT id, user_id FROM customers WHERE id = ? AND (is_deleted = 0 OR is_deleted IS NULL) LIMIT 1`,
+        [customerId]
       );
 
       if (customerRows.length === 0) {
         throw new Error("Selected customer not found");
       }
       customerId = customerRows[0].id;
+      // Agar request mein userId nahi thi, toh customer table se auto-get kar lein
+      if (!effectiveUserId) {
+        effectiveUserId = customerRows[0].user_id;
+      }
     }
 
     if (!customerId && safeEmail) {
       const [existingCustomer] = await connection.query(
-        `SELECT id FROM customers WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) AND (is_deleted = 0 OR is_deleted IS NULL) LIMIT 1`,
+        `SELECT id, user_id FROM customers WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) AND (is_deleted = 0 OR is_deleted IS NULL) LIMIT 1`,
         [safeEmail]
       );
 
       if (existingCustomer.length > 0) {
         customerId = existingCustomer[0].id;
+        if (!effectiveUserId) {
+          effectiveUserId = existingCustomer[0].user_id;
+        }
         await connection.query(
           `UPDATE customers SET name = ?, address = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
           [safeName, shippingAddress || "", customerId]
@@ -51,7 +61,7 @@ const createOrder = async (data, userId) => {
         }
         const [newCustomer] = await connection.query(
           `INSERT INTO customers (name, email, address, user_id, is_deleted) VALUES (?, ?, ?, ?, 0)`,
-          [safeName, safeEmail, shippingAddress || "", userId]
+          [safeName, safeEmail, shippingAddress || "", effectiveUserId || null]
         );
         customerId = newCustomer.insertId;
       }
@@ -72,7 +82,7 @@ const createOrder = async (data, userId) => {
       parseFloat(totalAmount) || 0.0,
       paymentMethod ? String(paymentMethod).trim() : "Cash on Delivery",
       "Pending",
-      userId,
+      effectiveUserId || null, // Yeh SQL / Database se auto-managed ya resolved hoga
       stripeSessionId,
     ]);
 

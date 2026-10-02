@@ -43,8 +43,6 @@ const getMyOrders = async (req, res) => {
 // ======================================================
 const createOrder = async (req, res) => {
   try {
-    const userId = req.user.id;
-
     const {
       customerId,
       customerName,
@@ -53,18 +51,16 @@ const createOrder = async (req, res) => {
       totalAmount,
       paymentMethod,
       items,
-      successUrl, // NEW
-      cancelUrl, // NEW
+      successUrl,
+      cancelUrl,
     } = req.body;
 
-    // Validate items
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         message: "Order must contain at least one item",
       });
     }
 
-    // Validate customer information
     if (!customerName || !String(customerName).trim()) {
       return res.status(400).json({
         message: "Customer name is required",
@@ -112,8 +108,6 @@ const createOrder = async (req, res) => {
       stripeSessionId = session.id;
       checkoutUrl = session.url;
     }
-
-    // Save order in Database
     const result = await orderModel.createOrder(
       {
         customerId: customerId || null,
@@ -124,13 +118,11 @@ const createOrder = async (req, res) => {
         paymentMethod: paymentMethod || "Cash on Delivery",
         items,
         stripeSessionId,
-      },
-      userId,
+      }
     );
 
     const createdOrderId = result.insertId || result.id || "N/A";
 
-    // INSIDE createOrder FUNCTION
     try {
       await sendOrderEmail(customerEmail.trim(), {
         id: createdOrderId,
@@ -143,7 +135,6 @@ const createOrder = async (req, res) => {
       console.error("Failed to send SMTP email:", emailError.message);
     }
 
-    // Stripe Response
     if (isCard) {
       return res.status(200).json({
         message: "Redirecting to payment",
@@ -152,7 +143,6 @@ const createOrder = async (req, res) => {
       });
     }
 
-    // COD Response
     return res.status(200).json({
       message: "Order created successfully!",
       data: result,

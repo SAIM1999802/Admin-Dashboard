@@ -159,45 +159,46 @@ const Chatbot = () => {
                 {m.sender === "bot" && <div className="chat-avatar-mini" aria-hidden="true">S</div>}
                 <div className={`chat-bubble ${m.sender === "user" ? "user-message" : "bot-message"}`}>
                   {m.sender === "bot" ? (
-                    <ReactMarkdown
-                      components={{
-                        a: ({ node, href, children, ...props }) => {
-                          if (
-                            href &&
-                            (href.startsWith("/products/detail/") ||
-                             href.startsWith("/product/") ||
-                             href.startsWith("/"))
-                          ) {
-                            return (
-                              <a
-                                href={href}
-                                {...props}
-                                style={{
-                                  color: "#0066cc",
-                                  fontWeight: "bold",
-                                  textDecoration: "underline",
-                                  cursor: "pointer",
-                                }}
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  navigate(href);
-                                  setIsOpen(false); 
-                                }}
-                              >
-                                {children}
-                              </a>
-                            );
-                          }
-                          return (
-                            <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                              {children}
-                            </a>
-                          );
-                        },
-                      }}
-                    >
-                      {m.text}
-                    </ReactMarkdown>
+                  <ReactMarkdown
+                  components={{
+                    a: ({ node, href, children, ...props }) => {
+                      // Check karein ke href mein products/detail ya product path mojood hai ya nahi
+                      if (
+                        href &&
+                        (href.includes("/products/detail/") ||
+                         href.startsWith("/product/") ||
+                         (href.startsWith("/") && href !== "/"))
+                      ) {
+                        return (
+                          <a
+                            href={href}
+                            {...props}
+                            style={{
+                              color: "#0066cc",
+                              fontWeight: "bold",
+                              textDecoration: "underline",
+                              cursor: "pointer",
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              navigate(href);
+                              setIsOpen(false); 
+                            }}
+                          >
+                            {children}
+                          </a>
+                        );
+                      }
+                      return (
+                        <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+                          {children}
+                        </a>
+                      );
+                    },
+                  }}
+                >
+                  {m.text}
+                </ReactMarkdown>
                   ) : (
                     <p>{m.text}</p>
                   )}
