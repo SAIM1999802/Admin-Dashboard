@@ -50,7 +50,7 @@ system_prompt = (
     "5. Keep responses concise, professional, and clear."
 )
 
-admin_agent = create_agent(tools=admin_tools_list, model=llm, system_prompt=system_prompt)
+admin_agent = create_agent(tools=admin_tools_list, model=llm, system_prompt=system_prompt , temperature=0)
 
 def run_admin_bot(query: str) -> str:
     try:

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer"
+import Footer from "../components/Footer";
 import "../styles/ContactUs.css";
 
 const Icon = ({ children, size = 18, strokeWidth = 1.8, className = "" }) => (
@@ -48,6 +49,35 @@ const MapPinIcon = (p) => (
   </Icon>
 );
 
+const FacebookIcon = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.6 13.77 5.6c1.09 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 3h-2.33v6.8c4.56-.93 8-4.96 8-9.8z" />
+  </svg>
+);
+
+const InstagramIcon = ({ size = 18 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+  </svg>
+);
+
+const TwitterIcon = ({ size = 18 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
+
 const FAQS = [
   {
     q: "How long does shipping take?",
@@ -69,18 +99,67 @@ const FAQS = [
 
 export default function ContactUs() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState({
+    loading: false,
+    success: false,
+    error: "",
+  });
   const [openFaq, setOpenFaq] = useState(null);
+
+  // Auto-fill logged in user details
+  useEffect(() => {
+    // LocalStorage se logged-in user data fetch karna (Apne auth structure ke mutabiq adjust karein)
+    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (savedUser?.name || savedUser?.email) {
+      setForm((f) => ({
+        ...f,
+        name: savedUser.name || savedUser.fullName || "",
+        email: savedUser.email || "",
+      }));
+    }
+  }, []);
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Contact form submitted:", form);
-    setSubmitted(true);
-    setForm({ name: "", email: "", message: "" });
+    setStatus({ loading: true, success: false, error: "" });
+
+    const templateParams = {
+      from_name: form.name,
+      from_email: form.email,
+      message: form.message,
+    };
+
+    try {
+      const res = await emailjs.send(
+        "service_n49f37k",
+        "template_xm0s9ui",
+        templateParams,
+        "pErab04wMLDK9w2hI",
+      );
+
+      console.log("SUCCESS!", res.status, res.text);
+      setStatus({ loading: false, success: true, error: "" });
+
+      // Reset form but retain logged-in user details
+      const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      setForm({
+        name: savedUser.name || savedUser.fullName || "",
+        email: savedUser.email || "",
+        message: "",
+      });
+    } catch (err) {
+      console.error("EmailJS Failed Error:", err);
+      setStatus({
+        loading: false,
+        success: false,
+        error: err?.text || "Message could not be sent. Check console.",
+      });
+    }
   };
 
   const toggleFaq = (i) => {
@@ -120,9 +199,18 @@ export default function ContactUs() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            {submitted && (
+            {status.success && (
               <div className="velure-contact-success">
                 Thanks — we'll get back to you shortly.
+              </div>
+            )}
+
+            {status.error && (
+              <div
+                className="velure-contact-error"
+                style={{ color: "red", marginBottom: "1rem" }}
+              >
+                {status.error}
               </div>
             )}
 
@@ -168,20 +256,23 @@ export default function ContactUs() {
             <motion.button
               type="submit"
               className="velure-btn-submit"
+              disabled={status.loading}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              Send message
+              {status.loading ? "Sending..." : "Send message"}
             </motion.button>
           </motion.form>
 
           {/* Info Card Sidebar */}
           <aside className="velure-contact-card">
             <h2>Reach out directly</h2>
-            
+
             <div className="velure-info-list">
               <div className="velure-info-item">
-                <span className="velure-info-icon"><MailIcon /></span>
+                <span className="velure-info-icon">
+                  <MailIcon />
+                </span>
                 <div>
                   <h4>Email</h4>
                   <p>abdullahsaeedhayday@gmail.com</p>
@@ -189,7 +280,9 @@ export default function ContactUs() {
               </div>
 
               <div className="velure-info-item">
-                <span className="velure-info-icon"><PhoneIcon /></span>
+                <span className="velure-info-icon">
+                  <PhoneIcon />
+                </span>
                 <div>
                   <h4>Phone</h4>
                   <p>+92 3241050124</p>
@@ -197,7 +290,9 @@ export default function ContactUs() {
               </div>
 
               <div className="velure-info-item">
-                <span className="velure-info-icon"><ClockIcon /></span>
+                <span className="velure-info-icon">
+                  <ClockIcon />
+                </span>
                 <div>
                   <h4>Hours</h4>
                   <p>Mon–Fri, 9am–6pm</p>
@@ -205,7 +300,9 @@ export default function ContactUs() {
               </div>
 
               <div className="velure-info-item">
-                <span className="velure-info-icon"><MapPinIcon /></span>
+                <span className="velure-info-icon">
+                  <MapPinIcon />
+                </span>
                 <div>
                   <h4>Address</h4>
                   <p>Velure HQ, Karachi, Pakistan</p>
@@ -218,9 +315,15 @@ export default function ContactUs() {
             <div className="velure-socials-wrapper">
               <h4>Follow us</h4>
               <div className="velure-socials">
-                <a href="#" aria-label="Facebook">Fb</a>
-                <a href="#" aria-label="Twitter">Tw</a>
-                <a href="#" aria-label="Instagram">Ig</a>
+                <span className="velure-info-icon">
+                  <FacebookIcon />
+                </span>
+                <span className="velure-info-icon">
+                  <TwitterIcon />
+                </span>
+                <span className="velure-info-icon">
+                  <InstagramIcon />
+                </span>
               </div>
             </div>
           </aside>
@@ -257,16 +360,17 @@ export default function ContactUs() {
               >
                 <div className="velure-faq-question">
                   <span>{item.q}</span>
-                  <span className="velure-faq-icon">{openFaq === i ? "−" : "+"}</span>
+                  <span className="velure-faq-icon">
+                    {openFaq === i ? "−" : "+"}
+                  </span>
                 </div>
                 {openFaq === i && <p className="velure-faq-answer">{item.a}</p>}
               </div>
             ))}
           </div>
         </section>
-        <Footer/>
+        <Footer />
       </main>
-            
     </div>
   );
 }
